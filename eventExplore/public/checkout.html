@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Checkout</title>
+<style>
+  :root { --fg:#1c1c1e; --muted:#6c6c70; --line:#d8d8dc; --accent:#0a63ce; --bad:#c72e2e; --good:#0a7d38; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fg:#f2f2f7; --muted:#9a9aa0; --line:#3a3a3c; --accent:#4a9eff; }
+    body { background:#000; }
+  }
+  * { box-sizing:border-box; }
+  body { font:16px -apple-system,system-ui,sans-serif; color:var(--fg); margin:0; padding:24px 20px calc(24px + env(safe-area-inset-bottom)); }
+  h1 { font-size:20px; margin:0 0 4px; }
+  .amount { font-size:34px; font-weight:600; letter-spacing:-.5px; margin:0 0 24px; }
+  label { display:block; font-size:13px; color:var(--muted); margin:14px 0 6px; }
+  input { width:100%; padding:13px 12px; font-size:17px; border:1px solid var(--line); border-radius:10px;
+          background:transparent; color:var(--fg); -webkit-appearance:none; }
+  input:focus { outline:2px solid var(--accent); outline-offset:-1px; border-color:transparent; }
+  .row { display:flex; gap:12px; } .row > div { flex:1; }
+  button { width:100%; padding:15px; font-size:17px; font-weight:600; border:0; border-radius:12px;
+           background:var(--accent); color:#fff; margin-top:22px; }
+  button:disabled { opacity:.45; }
+  button.secondary { background:transparent; color:var(--accent); border:1px solid var(--line); margin-top:10px; }
+  .msg { margin-top:16px; padding:12px 14px; border-radius:10px; font-size:14px; line-height:1.4; display:none; }
+  .msg.err { display:block; background:rgba(199,46,46,.12); color:var(--bad); }
+  .msg.ok  { display:block; background:rgba(10,125,56,.12); color:var(--good); }
+  .msg.warn{ display:block; background:rgba(200,140,0,.14); color:#8a6100; }
+  .note { font-size:12px; color:var(--muted); margin-top:20px; line-height:1.5; }
+</style>
+</head>
+<body>
+  <h1>Event Explore</h1>
+  <p class="amount" id="amount">—</p>
+
+  <div id="msg" class="msg"></div>
+
+  <form id="form" novalidate>
+    <!--
+      No `name` attributes on any card field, and no form action.
+      With forte.js this is what keeps card data from ever reaching our server:
+      unnamed inputs are not serialized into a normal form POST.
+    -->
+    <label for="name">Name on card</label>
+    <input id="name" autocomplete="cc-name" inputmode="text">
+
+    <label for="pan">Card number</label>
+    <input id="pan" autocomplete="cc-number" inputmode="numeric" maxlength="19" placeholder="4111 1111 1111 1111">
+
+    <div class="row">
+      <div>
+        <label for="exp">Expiry (MM/YY)</label>
+        <input id="exp" autocomplete="cc-exp" inputmode="numeric" maxlength="5" placeholder="12/29">
+      </div>
+      <div>
+        <label for="cvv">CVV</label>
+        <input id="cvv" autocomplete="cc-csc" inputmode="numeric" maxlength="4" placeholder="123">
+      </div>
+    </div>
+
+    <button type="submit" id="pay">Pay</button>
+    <button type="button" id="reader" class="secondary" hidden>Tap or insert card</button>
+    <button type="button" id="cancel" class="secondary">Cancel</button>
+  </form>
+
+  <p class="note" id="note"></p>
+
+<script>
+(async function () {
+  const $ = (id) => document.getElementById(id);
+  const msg = (text, kind) => { $('msg').textContent = text; $('msg').className = 'msg ' + kind; };
+
+  const cfg = await (await fetch('/checkout/bootstrap' + location.search)).json();
+  $('amount').textContent = '$' + Number(cfg.amount).toFixed(2);
+
+  const done = (txn) => { location.href = cfg.returnSuccess + '?transaction_id=' + encodeURIComponent(txn ?? ''); };
+  $('cancel').onclick = () => { location.href = cfg.returnCancel; };
+
+  // -- Native card reader bridge -------------------------------------------
+  // WKWebView cannot reach Bluetooth. The only way to involve the DynaFlex II
+  // Go from this page is to ask native Swift to do the read for us. The button
+  // is hidden unless the native handler actually exists, so this page stays
+  // fully functional in a desktop browser.
+  const nativeReader = window.webkit?.messageHandlers?.cardReader;
+  if (nativeReader) {
+    $('reader').hidden = false;
+    $('reader').onclick = () => {
+      msg('Present card to the reader…', 'warn');
+      nativeReader.postMessage({ amount: cfg.amount, orderNumber: cfg.orderNumber });
+    };
+    // Swift calls this back after it has posted the encrypted read to /api/payments/swipe-sale.
+    window.onCardReaderResult = (result) => {
+      if (result.approved) done(result.transaction_id);
+      else msg(result.error || result.message || 'Card declined.', 'err');
+    };
+  }
+
+  // -- Amount / field helpers ----------------------------------------------
+  $('exp').addEventListener('input', (e) => {
+    let v = e.target.value.replace(/\D/g, '').slice(0, 4);
+    if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
+    e.target.value = v;
+  });
+
+  function expiry() {
+    const [mm, yy] = $('exp').value.split('/');
+    return { month: Number(mm), year: yy && yy.length === 2 ? 2000 + Number(yy) : Number(yy) };
+  }
+
+  async function postJson(url, body) {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    return { ok: res.ok, data: await res.json() };
+  }
+
+  // -- Submit ---------------------------------------------------------------
+  $('form').onsubmit = async (e) => {
+    e.preventDefault();
+    $('pay').disabled = true;
+    msg('Processing…', 'warn');
+
+    try {
+      if (cfg.paymentMode === 'fortejs') {
+        await payWithForteJs();
+      } else {
+        await payDirect();
+      }
+    } catch (err) {
+      msg(err.message || 'Payment failed.', 'err');
+      $('pay').disabled = false;
+    }
+  };
+
+  // Production path. forte.js posts the card straight to Forte and hands back a
+  // one-time token; our server never touches the PAN.
+  function payWithForteJs() {
+    return new Promise((resolve, reject) => {
+      if (typeof forte === 'undefined') {
+        return reject(new Error('forte.js did not load. Check FORTE_JS_URL in .env — it has no verified default.'));
+      }
+      const { month, year } = expiry();
+      forte
+        .createToken({
+          api_login_id: cfg.apiLoginId,
+          card_number: $('pan').value.replace(/\s/g, ''),
+          expire_month: month,
+          expire_year: year,
+          cvv: $('cvv').value,
+        })
+        .success(async (r) => {
+          const { ok, data } = await postJson('/api/payments/token-sale', {
+            one_time_token: r.onetime_token || r.one_time_token,
+            amount: cfg.amount,
+            order_number: cfg.orderNumber,
+          });
+          if (ok && data.approved) resolve(done(data.transaction_id));
+          else reject(new Error(data.message || data.error || 'Card declined.'));
+        })
+        .error((r) => reject(new Error(r?.response_description || 'Could not tokenize card.')));
+    });
+  }
+
+  // Sandbox wiring path. Raw PAN crosses our server. Server refuses in production.
+  async function payDirect() {
+    const { month, year } = expiry();
+    const { ok, data } = await postJson('/api/payments/direct-sale', {
+      amount: cfg.amount,
+      order_number: cfg.orderNumber,
+      card: {
+        nameOnCard: $('name').value,
+        accountNumber: $('pan').value.replace(/\s/g, ''),
+        expireMonth: month,
+        expireYear: year,
+        cvv: $('cvv').value,
+      },
+    });
+    if (ok && data.approved) return done(data.transaction_id);
+    throw new Error(data.message || data.error || 'Card declined.');
+  }
+
+  // -- Load forte.js only when configured -----------------------------------
+  if (cfg.paymentMode === 'fortejs') {
+    if (!cfg.forteJsUrl) {
+      msg('PAYMENT_MODE=fortejs but FORTE_JS_URL is empty. Get the script URL from Forte.', 'err');
+      $('pay').disabled = true;
+    } else {
+      const s = document.createElement('script');
+      s.src = cfg.forteJsUrl;
+      s.onerror = () => { msg('forte.js failed to load from ' + cfg.forteJsUrl, 'err'); $('pay').disabled = true; };
+      document.head.appendChild(s);
+    }
+  } else {
+    $('note').textContent = 'Sandbox mode: card data is posted to your own server. Never enable this in production.';
+  }
+})();
+</script>
+</body>
+</html>

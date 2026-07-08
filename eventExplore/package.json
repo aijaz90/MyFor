@@ -1,0 +1,20 @@
+{
+  "name": "event-explore-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Backend for MrFor iOS app: CSG Forte payments + hosted checkout page",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "smoke": "node scripts/smoke.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}
