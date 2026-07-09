@@ -3,62 +3,64 @@
 //  MrFor
 //
 //  Points the app at the eventExplore backend. There are deliberately no Forte
-//  credentials in this file, and none should ever be added: the API Secure Key
-//  can move money, and anything shipped in an .ipa is readable by anyone who
-//  downloads it. The app only ever talks to our own server.
+//  credentials here, and none should ever be added: the API Secure Key can move
+//  money, and anything shipped in an .ipa is readable. The app talks only to our
+//  own server, which holds the credentials.
+//
+//  The active backend is chosen in Server settings: "Local" (your localhost
+//  eventExplore) or "Production" (your deployed server). Both expose the same
+//  endpoints; only the base URL differs.
 //
 
 import Foundation
 
 enum ForteConfig {
-    /// Where `eventExplore` is running.
-    ///
-    /// - Simulator: `localhost` works as-is.
-    /// - Physical device: replace with your Mac's LAN address, e.g. `http://192.168.1.42:3000`,
-    ///   and make sure the phone is on the same Wi-Fi.
-    ///
-    /// Plain HTTP to a local address is blocked by App Transport Security unless
-    /// you opt in. Because this target uses a *generated* Info.plist, add the
-    /// exception in Build Settings → "Info.plist Values" is not enough — ATS keys
-    /// require a real file. Either:
-    ///   1. Set `GENERATE_INFOPLIST_FILE = NO`, add an Info.plist, and set
-    ///      `NSAppTransportSecurity` → `NSAllowsLocalNetworking` = YES; or
-    ///   2. Run the backend behind HTTPS (ngrok, Caddy) and skip ATS entirely.
-    /// Option 2 is less work and matches production more closely.
-    static let backendBaseURL = URL(string: "http://localhost:3000")!
+    enum Environment: String, CaseIterable {
+        case local
+        case production
 
-    /// Paths the WebView watches for to know the flow ended.
-    /// Keep in sync with CHECKOUT_RETURN_SUCCESS / CHECKOUT_RETURN_CANCEL in `.env`.
-    static let successPath = "/checkout/complete"
-    static let cancelPath = "/checkout/cancel"
+        var title: String { self == .local ? "Local" : "Production" }
+        var subtitle: String { self == .local ? "Your machine / LAN" : "Deployed server" }
+        var symbol: String { self == .local ? "laptopcomputer" : "cloud" }
+    }
 
-    /// Name of the `WKScriptMessageHandler` the checkout page looks for at
-    /// `window.webkit.messageHandlers.cardReader`. The page hides its
-    /// "Tap or insert card" button when this handler is absent.
-    static let cardReaderHandlerName = "cardReader"
+    // UserDefaults keys, shared with ServerSettingsView (@AppStorage).
+    static let envKey = "backend_env"
+    static let localURLKey = "backend_local_url"
+    static let prodURLKey = "backend_prod_url"
 
-    static func checkoutURL(amount: Decimal, orderNumber: String?) -> URL {
-        var components = URLComponents(
-            url: backendBaseURL.appendingPathComponent("checkout.html"),
-            resolvingAgainstBaseURL: false
-        )!
-        var items = [URLQueryItem(name: "amount", value: "\(amount)")]
-        if let orderNumber, !orderNumber.isEmpty {
-            items.append(URLQueryItem(name: "order_number", value: orderNumber))
+    // Defaults. Local works on the Simulator as-is; on a physical device use your
+    // Mac's LAN address (e.g. http://192.168.1.42:3000). Production is yours to set.
+    static let defaultLocalURL = "http://localhost:3000"
+    static let defaultProdURL = ""
+
+    static var environment: Environment {
+        Environment(rawValue: UserDefaults.standard.string(forKey: envKey) ?? "") ?? .local
+    }
+
+    /// The active base URL, resolved live so a change in Settings takes effect at once.
+    static var backendBaseURL: URL {
+        let raw: String
+        switch environment {
+        case .local:      raw = stored(localURLKey, fallback: defaultLocalURL)
+        case .production: raw = stored(prodURLKey, fallback: defaultProdURL)
         }
-        components.queryItems = items
-        return components.url!
+        return URL(string: raw) ?? URL(string: defaultLocalURL)!
     }
 
     static func endpoint(_ path: String) -> URL {
         backendBaseURL.appendingPathComponent(path)
     }
+
+    private static func stored(_ key: String, fallback: String) -> String {
+        let v = UserDefaults.standard.string(forKey: key)?.trimmingCharacters(in: .whitespaces)
+        return (v?.isEmpty == false) ? v! : fallback
+    }
 }
 
-/// How a checkout attempt ended. `.cancelled` and `.failed` are distinct because
-/// only one of them should be surfaced to the user as a problem.
-enum CheckoutOutcome: Equatable {
-    case approved(transactionID: String?)
-    case cancelled
+/// How a charge attempt ended.
+enum PaymentOutcome: Equatable {
+    case approved(transactionID: String?, authCode: String?)
+    case declined(message: String)
     case failed(message: String)
 }

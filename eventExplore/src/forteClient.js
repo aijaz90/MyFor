@@ -3,9 +3,8 @@ import { config } from './config.js';
 /**
  * Thin client over the Forte REST API v3.
  *
- * Auth (verified against Forte's "Common Authentication Process" doc and by
- * live probe): HTTP Basic with API Access ID as username and API Secure Key as
- * password, PLUS a custom X-Forte-Auth-Organization-Id header naming the org
+ * Auth (verified): HTTP Basic with API Access ID as username and API Secure Key
+ * as password, PLUS a custom X-Forte-Auth-Organization-Id header naming the org
  * the request authenticates at.
  */
 
@@ -31,13 +30,13 @@ export class ForteError extends Error {
   }
 }
 
-async function post(url, payload) {
+async function request(method, url, payload) {
   let res;
   try {
     res = await fetch(url, {
-      method: 'POST',
+      method,
       headers: authHeaders(),
-      body: JSON.stringify(payload),
+      ...(payload ? { body: JSON.stringify(payload) } : {}),
       signal: AbortSignal.timeout(30_000),
     });
   } catch (cause) {
@@ -49,7 +48,6 @@ async function post(url, payload) {
   try {
     body = text ? JSON.parse(text) : {};
   } catch {
-    // Forte returns nginx HTML on some misrouted paths; keep it visible.
     throw new ForteError(`Forte returned non-JSON (HTTP ${res.status})`, { status: res.status, body: text.slice(0, 500) });
   }
 
@@ -58,6 +56,29 @@ async function post(url, payload) {
     throw new ForteError(desc, { status: res.status, body });
   }
   return body;
+}
+
+const post = (url, payload) => request('POST', url, payload);
+
+/**
+ * Forte's sandbox sometimes returns a transient "Internal service error" when a
+ * transaction is read immediately after it's created (eventual consistency).
+ * Retry a few times with backoff before giving up — used by the receipt fetch.
+ */
+async function requestWithRetry(method, url, { attempts = 4, delayMs = 1200 } = {}) {
+  let lastErr;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await request(method, url);
+    } catch (e) {
+      lastErr = e;
+      const desc = e?.body?.response?.response_desc || e.message || '';
+      const transient = e.status === 500 || e.status === 0 || /internal service error/i.test(desc);
+      if (!transient || i === attempts - 1) throw e;
+      await new Promise((r) => setTimeout(r, delayMs));
+    }
+  }
+  throw lastErr;
 }
 
 /**
@@ -81,27 +102,66 @@ function normalize(raw) {
   };
 }
 
-/** Sale funded by a forte.js one-time token. This is the production path. */
-export async function saleWithToken({ amount, oneTimeToken, orderNumber }) {
-  // Field name note: `one_time_token` is documented as the value forte.js
-  // returns and is consumable by the REST API for up to 60 minutes. Whether it
-  // nests under `card` (as here) or rides as a sibling `paymethod_token` is not
-  // stated in Forte's public docs. Confirm against your sandbox before relying
-  // on it -- a wrong shape shows up as a validation error, not a silent charge.
-  const payload = {
-    action: 'sale',
-    authorization_amount: Number(amount),
-    ...(orderNumber ? { order_number: String(orderNumber) } : {}),
-    card: { one_time_token: oneTimeToken },
-  };
-  return normalize(await post(transactionsPath(), payload));
+/** Read-only auth check. Returns the location record; used by /health and startup. */
+export async function verifyCredentials() {
+  const url = `${config.baseUrl}/organizations/${config.organizationId}/locations/${config.locationId}`;
+  const body = await request('GET', url);
+  return { dbaName: body?.dba_name ?? null, status: body?.status ?? null };
 }
 
 /**
- * Forte identifies the network with a short `card_type` code rather than
- * inferring it from the PAN. The browser doesn't send one, and an `undefined`
- * value would be silently dropped by JSON.stringify, so derive it here.
+ * Receipt for a completed transaction. GETs the transaction from Forte and
+ * normalizes it into the shape the app's receipt screen needs. Also fetches the
+ * merchant (DBA) name so the receipt has a proper header.
  */
+export async function getReceipt(transactionId) {
+  const txnURL = `${config.baseUrl}/organizations/${config.organizationId}/locations/${config.locationId}/transactions/${transactionId}`;
+  const [txn, merchant] = await Promise.all([
+    requestWithRetry('GET', txnURL),
+    verifyCredentials().catch(() => ({ dbaName: null })),
+  ]);
+
+  const r = txn?.response ?? {};
+  const card = txn?.card ?? {};
+  return {
+    transaction_id: txn?.transaction_id ?? transactionId,
+    approved: r.response_code === 'A01',
+    status: txn?.status ?? null,
+    amount: txn?.authorization_amount ?? null,
+    currency: config.currency,
+    authorization_code: txn?.authorization_code ?? r.authorization_code ?? null,
+    response_code: r.response_code ?? null,
+    message: r.response_desc ?? null,
+    date: txn?.received_date ?? null,
+    card: {
+      type: card.card_type ?? null,
+      last4: card.last_4_account_number ?? null,
+      masked: card.masked_account_number ?? null,
+      name_on_card: card.name_on_card ?? null,
+    },
+    avs_result: r.avs_result ?? null,
+    cvv_result: r.cvv_result ?? null,
+    merchant_name: merchant.dbaName ?? null,
+  };
+}
+
+/**
+ * This location requires billing_address.first_name / last_name on a sale
+ * (Forte response F01 "MANDATORY FIELD MISSING"). Prefer explicit fields, else
+ * split the name on the card.
+ */
+function billingAddress(card) {
+  let first = card.billingFirstName;
+  let last = card.billingLastName;
+  if (!first || !last) {
+    const parts = String(card.nameOnCard ?? '').trim().split(/\s+/);
+    first = first || parts[0] || 'Card';
+    last = last || parts.slice(1).join(' ') || 'Holder';
+  }
+  return { first_name: first, last_name: last };
+}
+
+/** Forte identifies the network with a short code rather than inferring it from the PAN. */
 export function deriveCardType(pan = '') {
   const n = String(pan).replace(/\D/g, '');
   if (/^4/.test(n)) return 'visa';
@@ -113,12 +173,50 @@ export function deriveCardType(pan = '') {
   return undefined;
 }
 
-/** Sale from raw card fields. Sandbox wiring only -- see PAYMENT_MODE in .env.example. */
+/**
+ * Card-present sale from a DynaFlex II Go encrypted read. THE PRIMARY PATH.
+ *
+ * UNVERIFIED FIELD NAMES. Forte's docs say credit cards may be authorized "by
+ * passing swipe data in a POST request to the transactions URI", but the exact
+ * card-present schema is only in their client-rendered SPA docs. Two facts are
+ * certain and shape this:
+ *
+ *   - The reader encrypts under DUKPT; the ciphertext "can only be decrypted by
+ *     the Magensa decryption service" (MagTek). Either Forte relays it to
+ *     Magensa for your account, or you hold Magensa credentials yourself.
+ *   - Card-present almost certainly needs an EMV certification on your location.
+ *
+ * The `card` keys below are placeholders. Confirm them with your Forte rep
+ * (questions are listed in README.md) before relying on this in anything real.
+ */
+export async function saleWithEncryptedCard({ amount, swipe, orderNumber }) {
+  // Forte v3 has no transaction-level `currency` field -- the sandbox rejects it
+  // ("Could not find member 'currency'"). Currency is fixed by the location
+  // (USD here). config.currency is kept for display/metadata only.
+  const payload = {
+    action: 'sale',
+    authorization_amount: Number(amount),
+    ...(orderNumber ? { order_number: String(orderNumber) } : {}),
+    card: {
+      // Replace with Forte's actual card-present schema.
+      swipe_data: swipe.encryptedTrack,
+      ksn: swipe.ksn,
+      encryption_method: swipe.encryptionMethod ?? 'dukpt',
+      ...(swipe.entryMode ? { entry_mode: swipe.entryMode } : {}),
+    },
+  };
+  return normalize(await post(transactionsPath(), payload));
+}
+
+/**
+ * Sale from raw card fields. SANDBOX TESTING ONLY -- lets you prove the Forte
+ * charge path end-to-end (and the app's result handling) before the encrypted
+ * reader integration is finished. Refused in production.
+ */
 export async function saleWithRawCard({ amount, card, orderNumber }) {
   if (config.env === 'production') {
     throw new ForteError('Refusing to send raw PAN from this server in production');
   }
-
   const cardType = card.cardType ?? deriveCardType(card.accountNumber);
   if (!cardType) throw new ForteError('Unrecognized card number', { status: 400 });
 
@@ -126,6 +224,7 @@ export async function saleWithRawCard({ amount, card, orderNumber }) {
     action: 'sale',
     authorization_amount: Number(amount),
     ...(orderNumber ? { order_number: String(orderNumber) } : {}),
+    billing_address: billingAddress(card),
     card: {
       card_type: cardType,
       name_on_card: card.nameOnCard,
@@ -138,41 +237,10 @@ export async function saleWithRawCard({ amount, card, orderNumber }) {
   return normalize(await post(transactionsPath(), payload));
 }
 
-/**
- * Sale from a DynaFlex II Go / eDynamo encrypted swipe-or-dip read.
- *
- * UNVERIFIED. Forte's docs say credit cards may be authorized "by passing
- * swipe data in a POST request to the transactions URI", but the exact field
- * names are only in their client-rendered SPA docs, which I could not extract.
- *
- * What is certain: the reader encrypts under DUKPT and the ciphertext "can only
- * be decrypted by the Magensa decryption service" (MagTek's service). So one of
- * two things is true for your account, and only Forte can tell you which:
- *
- *   (a) Forte relays the blob to Magensa for you -- then you post it here; or
- *   (b) you hold your own Magensa credentials and decrypt/re-encrypt first.
- *
- * Either way this almost certainly requires an EMV certification on your Forte
- * location before it will authorize. Do not ship against this shape untested.
- */
-export async function saleWithEncryptedSwipe({ amount, swipe, orderNumber }) {
-  const payload = {
-    action: 'sale',
-    authorization_amount: Number(amount),
-    ...(orderNumber ? { order_number: String(orderNumber) } : {}),
-    card: {
-      // Placeholder key names. Replace with Forte's actual card-present schema.
-      swipe_data: swipe.encryptedTrack,
-      ksn: swipe.ksn,
-      encryption_method: swipe.encryptionMethod ?? 'dukpt',
-    },
-  };
-  return normalize(await post(transactionsPath(), payload));
-}
-
 export const forteMeta = () => ({
   env: config.env,
   baseUrl: config.baseUrl,
   organizationId: config.organizationId,
   locationId: config.locationId,
+  currency: config.currency,
 });
