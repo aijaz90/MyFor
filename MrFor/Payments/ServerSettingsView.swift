@@ -10,7 +10,7 @@
 import SwiftUI
 
 struct ServerSettingsView: View {
-    @AppStorage(ForteConfig.envKey) private var envRaw = ForteConfig.Environment.local.rawValue
+    @AppStorage(ForteConfig.envKey) private var envRaw = ForteConfig.Environment.production.rawValue
     @AppStorage(ForteConfig.localURLKey) private var localURL = ForteConfig.defaultLocalURL
     @AppStorage(ForteConfig.prodURLKey) private var prodURL = ForteConfig.defaultProdURL
 
@@ -21,7 +21,7 @@ struct ServerSettingsView: View {
     @State private var checkMessage: String?
 
     private var env: ForteConfig.Environment {
-        ForteConfig.Environment(rawValue: envRaw) ?? .local
+        ForteConfig.Environment(rawValue: envRaw) ?? .production
     }
 
     private var activeURL: String {

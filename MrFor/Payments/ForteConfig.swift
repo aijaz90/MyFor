@@ -30,12 +30,13 @@ enum ForteConfig {
     static let prodURLKey = "backend_prod_url"
 
     // Defaults. Local works on the Simulator as-is; on a physical device use your
-    // Mac's LAN address (e.g. http://192.168.1.42:3000). Production is yours to set.
+    // Mac's LAN address (e.g. http://192.168.1.42:3000). Production defaults to
+    // the deployed Azure backend, so a fresh install talks to it — not localhost.
     static let defaultLocalURL = "http://localhost:3000"
-    static let defaultProdURL = ""
+    static let defaultProdURL = "https://mmsapiapp-dev.azurewebsites.net"
 
     static var environment: Environment {
-        Environment(rawValue: UserDefaults.standard.string(forKey: envKey) ?? "") ?? .local
+        Environment(rawValue: UserDefaults.standard.string(forKey: envKey) ?? "") ?? .production
     }
 
     /// Crash-free fallback (the `??` branch is unreachable for this valid literal).
