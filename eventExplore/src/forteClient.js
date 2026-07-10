@@ -12,7 +12,7 @@ function authHeaders() {
   const basic = Buffer.from(`${config.accessId}:${config.secureKey}`).toString('base64');
   return {
     Authorization: `Basic ${basic}`,
-    'X-Forte-Auth-Organization-Id': config.organizationId,
+    'X-Forte-Auth-Organization-Id': config.authOrganizationId,
     'Content-Type': 'application/json',
     Accept: 'application/json',
   };

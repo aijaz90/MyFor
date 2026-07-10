@@ -23,6 +23,13 @@ export const config = {
   organizationId: process.env.FORTE_ORGANIZATION_ID || '',
   locationId: process.env.FORTE_LOCATION_ID || '',
   currency: process.env.FORTE_CURRENCY || 'USD',
+
+  // The org sent in the X-Forte-Auth-Organization-Id header. This must be the
+  // organization the API Access ID was ISSUED UNDER. For a plain merchant account
+  // that's the same as FORTE_ORGANIZATION_ID (leave this blank). For a partner
+  // account, set this to your partner/parent org — Forte then lets you charge the
+  // merchant org named in FORTE_ORGANIZATION_ID (the URL path).
+  authOrganizationId: process.env.FORTE_AUTH_ORGANIZATION_ID || process.env.FORTE_ORGANIZATION_ID || '',
 };
 
 /** Problems that make Forte calls impossible, surfaced at boot instead of at first request. */

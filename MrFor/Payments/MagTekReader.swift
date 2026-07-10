@@ -109,11 +109,11 @@ final class MagTekReader: NSObject, ReaderEngineProtocol {
         connectionState = .idle
     }
 
-    // MARK: Sale — start a QuickChip transaction and await the encrypted read
+    // MARK: Read — start a QuickChip transaction and return the encrypted read
 
-    func runSale(amount: Decimal, orderNumber: String?) async -> PaymentOutcome {
+    func readCard(amount: Decimal) async -> ReaderReadResult {
         guard let device else {
-            return .failed(message: "No reader connected. Open Bluetooth and connect the DynaFlex II Go first.")
+            return .failed("No reader connected. Open Bluetooth and connect the DynaFlex II Go first.")
         }
 
         let transaction = ITransaction.amount(
@@ -122,11 +122,11 @@ final class MagTekReader: NSObject, ReaderEngineProtocol {
             transactionType: 0,                       // 0x00 = purchase (EMV 9C)
             timeout: 60,
             for: [.MSR, .contact, .contactless],
-            quickChip: true                           // defer approval to Forte
+            quickChip: true                           // defer approval to the processor
         )
         transaction.currencyCode = Data([0x08, 0x40])   // USD (ISO 4217 numeric 840)
 
-        MTLog("🟢 Sale started: amount=\(amountString(amount)) order=\(orderNumber ?? "-") — present card")
+        MTLog("🟢 Read started: amount=\(amountString(amount)) — present card")
         do {
             let card: EncryptedCardData = try await withCheckedThrowingContinuation { cont in
                 self.saleContinuation = cont
@@ -138,25 +138,18 @@ final class MagTekReader: NSObject, ReaderEngineProtocol {
             }
             statusMessage = nil
             logCardData(card)
-            MTLog("💳 Card read OK (\(card.entryMode.rawValue), \(card.encryptedTrack.count / 2) bytes, ksn=\(card.ksn.isEmpty ? "none" : "present")) → sending to backend")
-            let outcome = await PaymentAPIClient.cardPresentSale(amount: amount, orderNumber: orderNumber, swipe: card)
-            MTLog("🏦 Backend result: \(outcome)")
-            return outcome
+            MTLog("💳 Card read OK (\(card.entryMode.rawValue), \(card.encryptedTrack.count / 2) bytes, ksn=\(card.ksn.isEmpty ? "none" : "present"))")
+            return .success(card)
         } catch let SaleError.declined(m) {
-            MTLog("🚫 Sale declined by reader: \(m)")
-            return .declined(message: m)
+            MTLog("🚫 Read declined by reader: \(m)"); return .failed(m)
         } catch SaleError.cancelled {
-            MTLog("🟡 Sale cancelled")
-            return .failed(message: "Transaction cancelled.")
+            MTLog("🟡 Read cancelled"); return .failed("Transaction cancelled.")
         } catch SaleError.timeout {
-            MTLog("⏱️ Sale timed out (no card presented)")
-            return .failed(message: "Card was not presented in time.")
+            MTLog("⏱️ Read timed out (no card presented)"); return .failed("Card was not presented in time.")
         } catch let SaleError.failed(m) {
-            MTLog("❌ Sale failed: \(m)")
-            return .failed(message: m)
+            MTLog("❌ Read failed: \(m)"); return .failed(m)
         } catch {
-            MTLog("❌ Sale error: \(error.localizedDescription)")
-            return .failed(message: error.localizedDescription)
+            MTLog("❌ Read error: \(error.localizedDescription)"); return .failed(error.localizedDescription)
         }
     }
 
@@ -197,7 +190,18 @@ final class MagTekReader: NSObject, ReaderEngineProtocol {
         let bytes = (data?.byteArray as Data?) ?? Data()
         let hex = bytes.map { String(format: "%02X", $0) }.joined()
         let ksn = TLV.firstValueHex(tag: [0xDF, 0xDF, 0x50], in: bytes) ?? ""
-        return EncryptedCardData(encryptedTrack: hex, ksn: ksn, encryptionMethod: "dukpt", entryMode: entryMode)
+        // Reader serial from the SDK. cardType isn't available in plaintext from
+        // the encrypted read (no PAN on device); the request falls back to a
+        // default. If your reader surfaces the brand in an event, set it here.
+        let serial = device?.getInfo()?.deviceSerialNumber ?? ""
+        return EncryptedCardData(
+            encryptedTrack: hex,
+            ksn: ksn,
+            encryptionMethod: "dukpt",
+            entryMode: entryMode,
+            deviceSerialNumber: serial,
+            cardType: ""
+        )
     }
 }
 

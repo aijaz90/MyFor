@@ -25,7 +25,7 @@ final class BluetoothManager: NSObject, ReaderEngineProtocol {
     private(set) var connectedName: String?
     private(set) var statusMessage: String?
 
-    @ObservationIgnored private var central: CBCentralManager!
+    @ObservationIgnored private var central: CBCentralManager?
     @ObservationIgnored private var peripherals: [String: CBPeripheral] = [:]
     @ObservationIgnored private var connected: CBPeripheral?
 
@@ -37,7 +37,7 @@ final class BluetoothManager: NSObject, ReaderEngineProtocol {
     // MARK: ReaderEngineProtocol
 
     func start() {
-        guard isReady else { return }
+        guard isReady, let central else { return }
         devices.removeAll()
         peripherals.removeAll()
         connectionState = .scanning
@@ -45,12 +45,12 @@ final class BluetoothManager: NSObject, ReaderEngineProtocol {
     }
 
     func stop() {
-        central.stopScan()
+        central?.stopScan()
         if case .scanning = connectionState { connectionState = .idle }
     }
 
     func connect(_ device: ReaderDevice) {
-        guard let peripheral = peripherals[device.id] else { return }
+        guard let peripheral = peripherals[device.id], let central else { return }
         stop()
         connectionState = .connecting(device.id)
         connected = peripheral
@@ -59,11 +59,11 @@ final class BluetoothManager: NSObject, ReaderEngineProtocol {
     }
 
     func disconnect() {
-        if let p = connected { central.cancelPeripheralConnection(p) }
+        if let p = connected { central?.cancelPeripheralConnection(p) }
     }
 
-    func runSale(amount: Decimal, orderNumber: String?) async -> PaymentOutcome {
-        .failed(message: "Card reading needs MagTek's SDK. Add MTUSDK.xcframework + MTSCRA.xcframework to the MrFor target, then rebuild — the app will switch to the real reader automatically.")
+    func readCard(amount: Decimal) async -> ReaderReadResult {
+        .failed("Card reading needs MagTek's SDK. Add MTUSDK.xcframework + MTSCRA.xcframework to the MrFor target, then rebuild — the app will switch to the real reader automatically.")
     }
 }
 

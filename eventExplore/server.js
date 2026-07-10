@@ -1,12 +1,15 @@
 import express from 'express';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 import { config, configProblems } from './src/config.js';
 import { payments } from './src/routes/payments.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 app.use(express.json({ limit: '32kb' }));
 
-// Never log a request body on this server: card-present and test payloads carry
-// sensitive card data.
+// Never log a request body on this server: card payloads carry sensitive data.
 app.use((req, _res, next) => {
   console.log(`${req.method} ${req.path}`);
   next();
@@ -14,6 +17,9 @@ app.use((req, _res, next) => {
 
 app.get('/health', (_req, res) => res.json({ ok: true, env: config.env, problems: configProblems() }));
 app.use('/api/payments', payments);
+
+// The manual card-entry page loaded by the app's WKWebView.
+app.use(express.static(join(__dirname, 'public')));
 
 app.listen(config.port, () => {
   const problems = configProblems();

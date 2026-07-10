@@ -12,16 +12,12 @@ import SwiftUI
 
 struct PaymentView: View {
     @State private var reader = ReaderEngine()
+    @State private var vm = FortePaymentProcessViewModel()
 
     @State private var amount: Decimal = 25.00
     @State private var showingBluetooth = false
     @State private var showingSettings = false
-    @State private var isCharging = false
-    @State private var outcome: PaymentOutcome?
-
-    // Receipt presentation
-    @State private var receiptTransactionID: String?
-    @State private var chargedAmount: Decimal = 0
+    @State private var showingManualCard = false
 
     @FocusState private var amountFocused: Bool
 
@@ -49,25 +45,26 @@ struct PaymentView: View {
 
                     amountEditor.padding(.top, 24)
 
-                    if isCharging, let prompt = reader.statusMessage, !prompt.isEmpty {
-                        Text(prompt)
+                    if vm.isProcessing {
+                        Text(reader.statusMessage ?? vm.processingMessage ?? "Processing…")
                             .font(.callout.weight(.medium)).foregroundStyle(AppTheme.primary.opacity(0.85))
                             .padding(.top, 16)
                             .transition(.opacity)
-                    }
-
-                    if let outcome, !isApproved(outcome) {
-                        resultBanner(outcome).padding(.top, 24)
-                            .transition(.opacity.combined(with: .move(edge: .top)))
                     }
 
                     Spacer()
 
                     chargeButton.padding(.horizontal).padding(.bottom, 12)
                 }
-                .animation(.easeInOut(duration: 0.25), value: outcome == nil)
-                .animation(.easeInOut(duration: 0.25), value: isCharging)
+                .animation(.easeInOut(duration: 0.25), value: vm.isProcessing)
+
+                // Success / failure popup (DynaFlex reader flow).
+                if let alert = vm.alert {
+                    PaymentAlertView(alert: alert) { vm.alert = nil }
+                        .zIndex(1)
+                }
             }
+            .animation(.easeInOut(duration: 0.2), value: vm.alert)
             .navigationTitle("Payment")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(AppTheme.secondary, for: .navigationBar)
@@ -93,9 +90,14 @@ struct PaymentView: View {
             }
             .sheet(isPresented: $showingBluetooth) { BluetoothDevicesView(reader: reader) }
             .sheet(isPresented: $showingSettings) { ServerSettingsView() }
-            .sheet(item: $receiptTransactionID) { txn in
-                ReceiptView(transactionID: txn, fallbackAmount: chargedAmount) {
-                    receiptTransactionID = nil
+            .sheet(isPresented: $showingManualCard) {
+                ManualCardView(amount: amount, orderNumber: orderNumber) { result in
+                    vm.handleManualEntry(result, amount: amount)
+                }
+            }
+            .sheet(item: Binding(get: { vm.receiptTransactionID }, set: { vm.receiptTransactionID = $0 })) { txn in
+                ReceiptView(transactionID: txn, fallbackAmount: vm.chargedAmount) {
+                    vm.receiptTransactionID = nil
                 }
             }
         }
@@ -159,8 +161,8 @@ struct PaymentView: View {
 
     // MARK: Charge
 
-    private var chargeDisabled: Bool { isCharging || !reader.connectionState.isConnected || amount <= 0 }
-    private var testChargeDisabled: Bool { isCharging || amount <= 0 }
+    private var chargeDisabled: Bool { vm.isProcessing || !reader.connectionState.isConnected || amount <= 0 }
+    private var testChargeDisabled: Bool { vm.isProcessing || amount <= 0 }
 
     private var chargeButton: some View {
         VStack(spacing: 12) {
@@ -169,12 +171,12 @@ struct PaymentView: View {
                 Task { await charge() }
             } label: {
                 HStack(spacing: 10) {
-                    if isCharging {
+                    if vm.isProcessing {
                         ProgressView().tint(AppTheme.primary)
                     } else {
                         Image(systemName: "creditcard.fill")
                     }
-                    Text(isCharging ? "Waiting for card…" : "Charge \(amountString)")
+                    Text(vm.isProcessing ? "Waiting for card…" : "Charge \(amountString)")
                         .font(.system(size: 18, weight: .bold, design: .rounded))
                 }
                 .foregroundStyle(AppTheme.primary)
@@ -209,71 +211,44 @@ struct PaymentView: View {
                 amountFocused = false
                 Task { await testCharge() }
             }
+
+            // Manual entry: opens the Forte-style card form in a web view. Works
+            // without the reader (card-not-present / keyed sale).
+            Button {
+                amountFocused = false
+                showingManualCard = true
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "keyboard")
+                    Text("Enter card manually")
+                }
+                .font(.system(size: 15, weight: .semibold, design: .rounded))
+                .foregroundStyle(AppTheme.primary)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(AppTheme.primary.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .strokeBorder(AppTheme.primary.opacity(0.25), lineWidth: 1)
+                )
+            }
+            .buttonStyle(BouncyButtonStyle())
+            .disabled(testChargeDisabled)
+            .opacity(testChargeDisabled ? 0.5 : 1)
         }
     }
 
     private var amountString: String { amount.formatted(.currency(code: "USD")) }
 
+    /// Reader payment → DynaFlex API → success/failure popup.
     private func charge() async {
-        MTLog("🛒 Charge tapped: \(amountString) order=\(orderNumber)")
-        isCharging = true
-        outcome = nil
-        let result = await reader.runSale(amount: amount, orderNumber: orderNumber)
-        MTLog("🛒 Charge finished: \(String(describing: result))")
-        handle(result)
+        MTLog("🛒 Charge tapped: \(amountString)")
+        await vm.processReaderPayment(using: reader, amount: amount)
     }
 
+    /// Sandbox keyed test charge → receipt.
     private func testCharge() async {
-        MTLog("🧪 Test charge (sandbox card): \(amountString)")
-        isCharging = true
-        outcome = nil
-        let result = await PaymentAPIClient.testSale(amount: amount, orderNumber: orderNumber, card: .sandboxVisa)
-        MTLog("🧪 Test charge finished: \(String(describing: result))")
-        handle(result)
-    }
-
-    /// On approval, present the receipt; otherwise show the inline banner.
-    private func handle(_ result: PaymentOutcome) {
-        isCharging = false
-        outcome = result
-        if case .approved(let txn, _) = result, let txn {
-            chargedAmount = amount
-            receiptTransactionID = txn
-        }
-    }
-
-    private func isApproved(_ o: PaymentOutcome) -> Bool {
-        if case .approved = o { return true } else { return false }
-    }
-
-    // MARK: Result banner (declined / failed only)
-
-    @ViewBuilder
-    private func resultBanner(_ outcome: PaymentOutcome) -> some View {
-        switch outcome {
-        case .approved:
-            EmptyView()
-        case .declined(let message):
-            banner("Declined", detail: message, tint: .orange, icon: "xmark.circle.fill")
-        case .failed(let message):
-            banner("Couldn’t complete", detail: message, tint: .red, icon: "exclamationmark.triangle.fill")
-        }
-    }
-
-    private func banner(_ title: String, detail: String, tint: Color, icon: String) -> some View {
-        VStack(spacing: 6) {
-            Label(title, systemImage: icon).foregroundStyle(tint).font(.headline)
-            if !detail.isEmpty {
-                Text(detail).font(.footnote).foregroundStyle(AppTheme.primary.opacity(0.8)).multilineTextAlignment(.center)
-            }
-        }
-        .frame(maxWidth: .infinity).padding()
-        .background(Color.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(tint.opacity(0.4), lineWidth: 1)
-        )
-        .padding(.horizontal)
+        await vm.testCharge(amount: amount, orderNumber: orderNumber)
     }
 }
 

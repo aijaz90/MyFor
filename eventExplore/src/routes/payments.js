@@ -15,8 +15,11 @@ export const payments = Router();
 function parseAmount(input) {
   const amount = Number(input);
   if (!Number.isFinite(amount) || amount <= 0) throw new ForteError('amount must be a positive number', { status: 400 });
-  if (Math.round(amount * 100) !== amount * 100) throw new ForteError('amount may not have sub-cent precision', { status: 400 });
-  return amount;
+  // Reject sub-cent amounts, but tolerate float error: 19.99 * 100 is 1998.9999…
+  // in JS, so compare against the nearest cent within a small epsilon.
+  const cents = Math.round(amount * 100);
+  if (Math.abs(amount * 100 - cents) > 1e-6) throw new ForteError('amount may not have sub-cent precision', { status: 400 });
+  return cents / 100; // normalized, exact to the cent
 }
 
 function send(res, result) {
@@ -97,6 +100,29 @@ payments.post('/test-sale', async (req, res) => {
     if (config.env === 'production') throw new ForteError('test-sale is disabled in production', { status: 403 });
     const { amount, card, order_number: orderNumber } = req.body ?? {};
     if (!card?.accountNumber) throw new ForteError('card.accountNumber is required', { status: 400 });
+    send(res, await saleWithRawCard({ amount: parseAmount(amount), card, orderNumber }));
+  } catch (err) {
+    fail(res, err);
+  }
+});
+
+/**
+ * Manual card entry ("Enter card manually"): add a new card and charge it in one
+ * step. Card-not-present / keyed sale. This is what the WKWebView card-entry page
+ * posts to. Same server-side path as a keyed sale (saleWithRawCard), which also
+ * derives the card_type and fills the billing name Forte requires.
+ *
+ * PCI note: this routes the raw PAN through the server, so it's guarded to
+ * sandbox (saleWithRawCard refuses in production). For production, move card
+ * capture to Forte.js tokenization so the PAN goes straight to Forte and the
+ * server only ever sees a one-time token.
+ */
+payments.post('/manual-sale', async (req, res) => {
+  try {
+    const { amount, card, order_number: orderNumber } = req.body ?? {};
+    if (!card?.accountNumber) throw new ForteError('Card number is required', { status: 400 });
+    if (!card?.expireMonth || !card?.expireYear) throw new ForteError('Card expiry is required', { status: 400 });
+    if (!card?.cvv) throw new ForteError('CVV is required', { status: 400 });
     send(res, await saleWithRawCard({ amount: parseAmount(amount), card, orderNumber }));
   } catch (err) {
     fail(res, err);

@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Enter Card</title>
+<style>
+  :root {
+    --bg:#0f1c3f; --bg2:#16264f; --card:#ffffff; --fg:#0f1c3f; --muted:#6b7280;
+    --line:#e3e8f0; --accent:#e8b84b; --accent-ink:#0f1c3f; --bad:#d64545; --good:#0a7d38;
+  }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body {
+    margin:0; min-height:100vh; font:16px -apple-system,system-ui,sans-serif; color:var(--fg);
+    background:linear-gradient(160deg,var(--bg),var(--bg2)); padding:22px 18px calc(22px + env(safe-area-inset-bottom));
+  }
+  .wrap { max-width:440px; margin:0 auto; }
+  .amount { text-align:center; color:#fff; margin:8px 0 20px; }
+  .amount .label { font-size:13px; opacity:.7; letter-spacing:.3px; text-transform:uppercase; }
+  .amount .value { font-size:40px; font-weight:800; margin-top:4px; }
+  .sheet { background:var(--card); border-radius:22px; padding:20px; box-shadow:0 20px 50px rgba(0,0,0,.35); }
+  h1 { font-size:18px; margin:0 0 4px; }
+  .sub { color:var(--muted); font-size:13px; margin:0 0 18px; }
+  label { display:block; font-size:12px; font-weight:600; color:var(--muted); margin:14px 0 6px; text-transform:uppercase; letter-spacing:.3px; }
+  .field { position:relative; }
+  input {
+    width:100%; padding:14px 12px; font-size:17px; border:1.5px solid var(--line); border-radius:12px;
+    background:#fff; color:var(--fg); -webkit-appearance:none; transition:border-color .15s;
+  }
+  input:focus { outline:none; border-color:var(--accent); }
+  input.invalid { border-color:var(--bad); }
+  .brand { position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:12px; font-weight:700; color:var(--muted); }
+  .row { display:flex; gap:12px; } .row > div { flex:1; }
+  .err { color:var(--bad); font-size:12px; margin-top:5px; min-height:14px; }
+  button {
+    width:100%; margin-top:22px; padding:16px; font-size:17px; font-weight:700; border:0; border-radius:14px;
+    background:var(--accent); color:var(--accent-ink);
+  }
+  button:disabled { opacity:.45; }
+  .msg { margin-top:14px; padding:12px 14px; border-radius:12px; font-size:14px; display:none; }
+  .msg.err { display:block; background:rgba(214,69,69,.12); color:var(--bad); }
+  .msg.ok  { display:block; background:rgba(10,125,56,.12); color:var(--good); }
+  .secure { text-align:center; color:#fff; opacity:.55; font-size:12px; margin-top:16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="amount">
+    <div class="label">Amount to pay</div>
+    <div class="value" id="amount">—</div>
+  </div>
+
+  <form class="sheet" id="form" novalidate autocomplete="on">
+    <h1>Enter card manually</h1>
+    <p class="sub">Card details are sent securely to complete this payment.</p>
+
+    <label for="name">Name on card</label>
+    <div class="field">
+      <input id="name" name="ccname" autocomplete="cc-name" inputmode="text" placeholder="Aijaz Ali">
+    </div>
+    <div class="err" id="err-name"></div>
+
+    <label for="pan">Card number</label>
+    <div class="field">
+      <input id="pan" name="cardnumber" autocomplete="cc-number" inputmode="numeric" maxlength="23" placeholder="4111 1111 1111 1111">
+      <span class="brand" id="brand"></span>
+    </div>
+    <div class="err" id="err-pan"></div>
+
+    <div class="row">
+      <div>
+        <label for="exp">Expiry</label>
+        <div class="field"><input id="exp" name="cc-exp" autocomplete="cc-exp" inputmode="numeric" maxlength="5" placeholder="MM/YY"></div>
+        <div class="err" id="err-exp"></div>
+      </div>
+      <div>
+        <label for="cvv">CVV</label>
+        <div class="field"><input id="cvv" name="cvc" autocomplete="cc-csc" inputmode="numeric" maxlength="4" placeholder="123"></div>
+        <div class="err" id="err-cvv"></div>
+      </div>
+    </div>
+
+    <button type="submit" id="pay" disabled>Pay</button>
+    <div class="msg" id="msg"></div>
+  </form>
+
+  <p class="secure">🔒 Your card is not stored on this device.</p>
+</div>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const params = new URLSearchParams(location.search);
+  const amount = params.get('amount') || '0';
+  const orderNumber = params.get('order_number') || '';
+  $('amount').textContent = '$' + Number(amount).toFixed(2);
+
+  // ---- Card number: format, brand detection, Luhn ------------------------
+  function detectBrand(n) {
+    if (/^4/.test(n)) return { name: 'VISA', cvv: 3 };
+    if (/^(5[1-5]|2(2[2-9]|[3-6]|7[01]|720))/.test(n)) return { name: 'MASTERCARD', cvv: 3 };
+    if (/^3[47]/.test(n)) return { name: 'AMEX', cvv: 4 };
+    if (/^(6011|65|64[4-9]|622)/.test(n)) return { name: 'DISCOVER', cvv: 3 };
+    if (/^(30[0-5]|36|38)/.test(n)) return { name: 'DINERS', cvv: 3 };
+    if (/^35(2[89]|[3-8])/.test(n)) return { name: 'JCB', cvv: 3 };
+    return null;
+  }
+  function luhn(n) {
+    let sum = 0, alt = false;
+    for (let i = n.length - 1; i >= 0; i--) {
+      let d = +n[i];
+      if (alt) { d *= 2; if (d > 9) d -= 9; }
+      sum += d; alt = !alt;
+    }
+    return n.length >= 13 && sum % 10 === 0;
+  }
+
+  $('pan').addEventListener('input', (e) => {
+    let n = e.target.value.replace(/\D/g, '').slice(0, 19);
+    const brand = detectBrand(n);
+    $('brand').textContent = brand ? brand.name : '';
+    // group in 4s (amex 4-6-5)
+    e.target.value = n.replace(/(.{4})/g, '$1 ').trim();
+    validate();
+  });
+  $('exp').addEventListener('input', (e) => {
+    let v = e.target.value.replace(/\D/g, '').slice(0, 4);
+    if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
+    e.target.value = v;
+    validate();
+  });
+  $('cvv').addEventListener('input', (e) => { e.target.value = e.target.value.replace(/\D/g, ''); validate(); });
+  $('name').addEventListener('input', validate);
+
+  // ---- Validation ---------------------------------------------------------
+  function fieldErrors() {
+    const errs = {};
+    const name = $('name').value.trim();
+    const pan = $('pan').value.replace(/\D/g, '');
+    const [mm, yy] = $('exp').value.split('/');
+    const cvv = $('cvv').value;
+    const brand = detectBrand(pan);
+
+    if (name.length < 2) errs.name = 'Enter the name on the card.';
+    if (!pan) errs.pan = 'Enter the card number.';
+    else if (!brand) errs.pan = 'Unsupported card type.';
+    else if (!luhn(pan)) errs.pan = 'That card number looks invalid.';
+
+    const m = Number(mm), y = yy ? 2000 + Number(yy) : NaN;
+    if (!mm || !yy || m < 1 || m > 12) errs.exp = 'Enter a valid expiry.';
+    else {
+      const now = new Date(), end = new Date(y, m, 0, 23, 59, 59);
+      if (end < now) errs.exp = 'The card has expired.';
+    }
+
+    const need = brand ? brand.cvv : 3;
+    if (!cvv || cvv.length < need) errs.cvv = `CVV must be ${need} digits.`;
+    return errs;
+  }
+
+  function validate() {
+    const errs = fieldErrors();
+    for (const f of ['name', 'pan', 'exp', 'cvv']) {
+      $('err-' + f).textContent = errs[f] || '';
+      $(f).classList.toggle('invalid', !!errs[f] && $(f).value.length > 0);
+    }
+    $('pay').disabled = Object.keys(errs).length > 0;
+    return Object.keys(errs).length === 0;
+  }
+
+  // ---- Submit → backend → native bridge -----------------------------------
+  const bridge = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.manualCard;
+
+  function finish(result) {
+    if (bridge) bridge.postMessage(result);           // hand back to the app
+  }
+  function message(text, kind) { $('msg').textContent = text; $('msg').className = 'msg ' + kind; }
+
+  $('form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+    $('pay').disabled = true;
+    message('Processing…', 'ok');
+
+    const pan = $('pan').value.replace(/\D/g, '');
+    const [mm, yy] = $('exp').value.split('/');
+    const body = {
+      amount, order_number: orderNumber,
+      card: {
+        nameOnCard: $('name').value.trim(),
+        accountNumber: pan,
+        expireMonth: Number(mm),
+        expireYear: 2000 + Number(yy),
+        cvv: $('cvv').value,
+      },
+    };
+
+    try {
+      const res = await fetch('/api/payments/manual-sale', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (data.approved) {
+        message('Approved ✓', 'ok');
+        finish({ approved: true, transaction_id: data.transaction_id || '', authorization_code: data.authorization_code || '' });
+      } else {
+        message(data.message || data.error || 'Card declined.', 'err');
+        $('pay').disabled = false;
+        finish({ approved: false, error: data.message || data.error || 'Card declined.' });
+      }
+    } catch (err) {
+      message('Could not reach the server.', 'err');
+      $('pay').disabled = false;
+    }
+  });
+})();
+</script>
+</body>
+</html>

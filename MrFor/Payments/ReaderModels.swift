@@ -60,7 +60,10 @@ struct ReaderDevice: Identifiable, Equatable {
 
     var isLikelyReader: Bool {
         let n = name.lowercased()
+        // The DynaFlex II Go advertises an abbreviated name like "DF II Go-B5AD44D",
+        // so match that too — not just the full "DynaFlex".
         return n.contains("dynaflex") || n.contains("dynaprox") || n.contains("magtek")
+            || n.contains("df ii") || n.hasPrefix("df ") || n.contains("dynapro")
     }
 }
 
@@ -87,10 +90,18 @@ enum CardEntryMode: String {
 /// says is "meant to be sent to the transaction processor". For MSR it carries
 /// the encrypted MagneSafe swipe.
 struct EncryptedCardData {
-    let encryptedTrack: String   // hex of the ARQC/EMV TLV block or encrypted MSR
-    let ksn: String              // Key Serial Number, if parsed out
-    let encryptionMethod: String // "dukpt"
+    let encryptedTrack: String        // hex of the ARQC/EMV TLV block or encrypted MSR (→ emvSredData)
+    let ksn: String                   // Key Serial Number, if parsed out
+    let encryptionMethod: String      // "dukpt"
     let entryMode: CardEntryMode
+    var deviceSerialNumber: String = "" // reader serial, from the SDK
+    var cardType: String = ""           // e.g. "VISA", if the reader surfaces it
+}
+
+/// Outcome of reading a card from the physical reader (before charging).
+enum ReaderReadResult {
+    case success(EncryptedCardData)
+    case failed(String)
 }
 
 /// The one surface the UI depends on. Both engines conform, guaranteeing parity.
@@ -100,15 +111,16 @@ protocol ReaderEngineProtocol: AnyObject {
     var connectionState: ReaderConnectionState { get }
     var isReady: Bool { get }            // Bluetooth powered on / SDK ready
     var connectedName: String? { get }
-    var statusMessage: String? { get }   // live prompts during a sale ("PRESENT CARD")
+    var statusMessage: String? { get }   // live prompts during a read ("PRESENT CARD")
 
     func start()                          // begin discovery
     func stop()                           // end discovery
     func connect(_ device: ReaderDevice)
     func disconnect()
 
-    /// Read a card off the connected reader and charge it via the Forte backend.
-    func runSale(amount: Decimal, orderNumber: String?) async -> PaymentOutcome
+    /// Drive the reader to produce one encrypted card read. The caller (the
+    /// view model) sends the result to the payment API.
+    func readCard(amount: Decimal) async -> ReaderReadResult
 }
 
 // MARK: - Compile-time engine selection

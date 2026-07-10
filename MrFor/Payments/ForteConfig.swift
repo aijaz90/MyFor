@@ -38,6 +38,9 @@ enum ForteConfig {
         Environment(rawValue: UserDefaults.standard.string(forKey: envKey) ?? "") ?? .local
     }
 
+    /// Crash-free fallback (the `??` branch is unreachable for this valid literal).
+    private static let fallbackURL = URL(string: "http://localhost:3000") ?? URL(fileURLWithPath: "/")
+
     /// The active base URL, resolved live so a change in Settings takes effect at once.
     static var backendBaseURL: URL {
         let raw: String
@@ -45,7 +48,7 @@ enum ForteConfig {
         case .local:      raw = stored(localURLKey, fallback: defaultLocalURL)
         case .production: raw = stored(prodURLKey, fallback: defaultProdURL)
         }
-        return URL(string: raw) ?? URL(string: defaultLocalURL)!
+        return URL(string: raw) ?? fallbackURL
     }
 
     static func endpoint(_ path: String) -> URL {
@@ -54,7 +57,8 @@ enum ForteConfig {
 
     private static func stored(_ key: String, fallback: String) -> String {
         let v = UserDefaults.standard.string(forKey: key)?.trimmingCharacters(in: .whitespaces)
-        return (v?.isEmpty == false) ? v! : fallback
+        if let v, !v.isEmpty { return v }
+        return fallback
     }
 }
 
