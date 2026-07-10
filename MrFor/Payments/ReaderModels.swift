@@ -90,12 +90,40 @@ enum CardEntryMode: String {
 /// says is "meant to be sent to the transaction processor". For MSR it carries
 /// the encrypted MagneSafe swipe.
 struct EncryptedCardData {
-    let encryptedTrack: String        // hex of the ARQC/EMV TLV block or encrypted MSR (→ emvSredData)
-    let ksn: String                   // Key Serial Number, if parsed out
+    let encryptedTrack: String        // hex used for the API's emvSredData
+    let ksn: String                   // Key Serial Number (deviceKSN)
     let encryptionMethod: String      // "dukpt"
     let entryMode: CardEntryMode
     var deviceSerialNumber: String = "" // reader serial, from the SDK
-    var cardType: String = ""           // e.g. "VISA", if the reader surfaces it
+    var cardType: String = ""           // e.g. "VISA", derived from track2
+
+    // Full raw read fields — for the debug screen and Swagger testing.
+    var transactionType: String = ""   // "EMV" / "MSR"
+    var cardHolderName: String = ""
+    var maskedTrack2: String = ""       // hex
+    var sredData: String = ""           // encrypted card data (from batch)
+    var arqcData: String = ""           // full ARQC block hex (AuthorizationRequest)
+    var batchData: String = ""          // full batch block hex (TransactionResult)
+
+    /// The reader read as pretty JSON (same shape as the Android app dumps),
+    /// for the "Copy all" action on the debug screen.
+    var debugJSON: String {
+        let dict: [String: Any] = [
+            "transactionType": transactionType,
+            "deviceKSN": ksn,
+            "deviceSerialNumber": deviceSerialNumber,
+            "cardType": cardType,
+            "cardHolderName": cardHolderName,
+            "maskTrack2": maskedTrack2,
+            "sredData": sredData,
+            "arqcData": arqcData,
+            "batchData": batchData,
+        ]
+        guard JSONSerialization.isValidJSONObject(dict),
+              let data = try? JSONSerialization.data(withJSONObject: dict, options: [.prettyPrinted, .sortedKeys]),
+              let json = String(data: data, encoding: .utf8) else { return "" }
+        return json
+    }
 }
 
 /// Outcome of reading a card from the physical reader (before charging).

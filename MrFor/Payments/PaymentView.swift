@@ -71,11 +71,11 @@ struct PaymentView: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button { showingSettings = true } label: { Image(systemName: "gearshape") }
-                        .tint(AppTheme.primary)
-                        .accessibilityLabel("Server settings")
-                }
+//                ToolbarItem(placement: .topBarLeading) {
+//                    Button { showingSettings = true } label: { Image(systemName: "gearshape") }
+//                        .tint(AppTheme.primary)
+//                        .accessibilityLabel("Server settings")
+//                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { showingBluetooth = true } label: {
                         Image(systemName: reader.connectionState.isConnected ? "creditcard.wireless" : "dot.radiowaves.left.and.right")
@@ -214,27 +214,27 @@ struct PaymentView: View {
 
             // Manual entry: opens the Forte-style card form in a web view. Works
             // without the reader (card-not-present / keyed sale).
-            Button {
-                amountFocused = false
-                showingManualCard = true
-            } label: {
-                HStack(spacing: 8) {
-                    Image(systemName: "keyboard")
-                    Text("Enter card manually")
-                }
-                .font(.system(size: 15, weight: .semibold, design: .rounded))
-                .foregroundStyle(AppTheme.primary)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
-                .background(AppTheme.primary.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .strokeBorder(AppTheme.primary.opacity(0.25), lineWidth: 1)
-                )
-            }
-            .buttonStyle(BouncyButtonStyle())
-            .disabled(testChargeDisabled)
-            .opacity(testChargeDisabled ? 0.5 : 1)
+//            Button {
+//                amountFocused = false
+//                showingManualCard = true
+//            } label: {
+//                HStack(spacing: 8) {
+//                    Image(systemName: "keyboard")
+//                    Text("Enter card manually")
+//                }
+//                .font(.system(size: 15, weight: .semibold, design: .rounded))
+//                .foregroundStyle(AppTheme.primary)
+//                .frame(maxWidth: .infinity)
+//                .padding(.vertical, 14)
+//                .background(AppTheme.primary.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+//                .overlay(
+//                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+//                        .strokeBorder(AppTheme.primary.opacity(0.25), lineWidth: 1)
+//                )
+//            }
+//            .buttonStyle(BouncyButtonStyle())
+//            .disabled(testChargeDisabled)
+//            .opacity(testChargeDisabled ? 0.5 : 1)
         }
     }
 

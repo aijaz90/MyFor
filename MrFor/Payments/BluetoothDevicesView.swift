@@ -14,6 +14,15 @@ struct BluetoothDevicesView: View {
     let reader: ReaderEngine
     @Environment(\.dismiss) private var dismiss
 
+    /// Debug read amount — value is irrelevant, we only want the reader's data.
+    private let readAmount: Decimal = 1.00
+
+    @State private var reading = false
+    @State private var readItem: ReadResultItem?
+    @State private var readError: String?
+
+    private struct ReadResultItem: Identifiable { let id = UUID(); let data: EncryptedCardData }
+
     var body: some View {
         NavigationStack {
             List {
@@ -45,8 +54,60 @@ struct BluetoothDevicesView: View {
                     }
                 }
             }
+            // "Tap to Pay" bar pinned to the bottom once a reader is connected.
+            .safeAreaInset(edge: .bottom) {
+                if reader.connectionState.isConnected { tapToPayBar }
+            }
+            .sheet(item: $readItem) { item in
+                ReaderDataView(data: item.data) { readItem = nil }
+            }
+            .alert("Read failed", isPresented: Binding(get: { readError != nil }, set: { if !$0 { readError = nil } })) {
+                Button("OK", role: .cancel) { readError = nil }
+            } message: {
+                Text(readError ?? "")
+            }
             .onAppear { if reader.isReady { reader.start() } }
-            .onDisappear { reader.stop() }
+            .onDisappear { if !reading { reader.stop() } }
+        }
+    }
+
+    // MARK: Tap to Pay
+
+    private var tapToPayBar: some View {
+        VStack(spacing: 8) {
+            if reading, let prompt = reader.statusMessage, !prompt.isEmpty {
+                Text(prompt).font(.footnote.weight(.medium)).foregroundStyle(.secondary)
+            }
+            Button {
+                Task { await readCard() }
+            } label: {
+                HStack(spacing: 8) {
+                    if reading { ProgressView().padding(.trailing, 2) }
+                    Image(systemName: "creditcard.wireless")
+                    Text(reading ? "Present card…" : "Verify · Tap to Pay")
+                }
+                .font(.system(size: 17, weight: .semibold, design: .rounded))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 15)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+            .disabled(reading)
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 10)
+        .background(.bar)
+    }
+
+    private func readCard() async {
+        reading = true
+        defer { reading = false }
+        let result = await reader.readCard(amount: readAmount)
+        switch result {
+        case .success(let data):
+            readItem = ReadResultItem(data: data)
+        case .failed(let message):
+            readError = message
         }
     }
 

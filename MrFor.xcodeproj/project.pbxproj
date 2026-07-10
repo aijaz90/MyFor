@@ -57,9 +57,30 @@
 		FA00000000000000000000F3 /* CocoaMQTT.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = CocoaMQTT.xcframework; path = Frameworks/CocoaMQTT.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		4B4C2BC93001038C00B60680 /* Exceptions for "MrFor" folder in "MrForTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Resources/GoogleService-Info.plist",
+			);
+			target = 4B4C15112FFE8B4900B60680 /* MrForTests */;
+		};
+		4B4C2BCA3001038C00B60680 /* Exceptions for "MrFor" folder in "MrForUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Resources/GoogleService-Info.plist",
+			);
+			target = 4B4C151B2FFE8B4900B60680 /* MrForUITests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		4B4C15072FFE8B4600B60680 /* MrFor */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4B4C2BC93001038C00B60680 /* Exceptions for "MrFor" folder in "MrForTests" target */,
+				4B4C2BCA3001038C00B60680 /* Exceptions for "MrFor" folder in "MrForUITests" target */,
+			);
 			path = MrFor;
 			sourceTree = "<group>";
 		};

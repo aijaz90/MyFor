@@ -49,6 +49,9 @@ final class MagTekReader: NSObject, ReaderEngineProtocol {
     // MARK: Sale bridging (event-driven → async)
     @ObservationIgnored private var saleContinuation: CheckedContinuation<EncryptedCardData, Error>?
     @ObservationIgnored private var entryMode: CardEntryMode = .chip
+    // Raw blocks accumulated across events during one read.
+    @ObservationIgnored private var capturedArqcHex = ""
+    @ObservationIgnored private var capturedBatchHex = ""
 
     private enum SaleError: Error { case declined(String), cancelled, timeout, failed(String) }
 
@@ -126,6 +129,8 @@ final class MagTekReader: NSObject, ReaderEngineProtocol {
         )
         transaction.currencyCode = Data([0x08, 0x40])   // USD (ISO 4217 numeric 840)
 
+        capturedArqcHex = ""
+        capturedBatchHex = ""
         MTLog("🟢 Read started: amount=\(amountString(amount)) — present card")
         do {
             let card: EncryptedCardData = try await withCheckedThrowingContinuation { cont in
@@ -184,25 +189,6 @@ final class MagTekReader: NSObject, ReaderEngineProtocol {
         }
     }
 
-    /// Build EncryptedCardData from an event payload. KSN (if present) is BER-TLV
-    /// tag DFDF50 in MagTek's encrypted output; we still forward the whole block.
-    private func makeCardData(from data: IData?) -> EncryptedCardData {
-        let bytes = (data?.byteArray as Data?) ?? Data()
-        let hex = bytes.map { String(format: "%02X", $0) }.joined()
-        let ksn = TLV.firstValueHex(tag: [0xDF, 0xDF, 0x50], in: bytes) ?? ""
-        // Reader serial from the SDK. cardType isn't available in plaintext from
-        // the encrypted read (no PAN on device); the request falls back to a
-        // default. If your reader surfaces the brand in an event, set it here.
-        let serial = device?.getInfo()?.deviceSerialNumber ?? ""
-        return EncryptedCardData(
-            encryptedTrack: hex,
-            ksn: ksn,
-            encryptionMethod: "dukpt",
-            entryMode: entryMode,
-            deviceSerialNumber: serial,
-            cardType: ""
-        )
-    }
 }
 
 // MARK: - MTUSDKDelegate (discovery). SDK delivers these on the main queue.
@@ -282,14 +268,23 @@ extension MagTekReader: IEventSubscriber {
                     self.handleTransactionStatus(status)
 
                 case MTU_EventType_CardData:
+                    // MSR swipe — self-contained, no separate batch block.
                     MTLog("🪪 CardData (MSR swipe) received")
                     self.entryMode = .swipe
-                    self.finishSale(.success(self.makeCardData(from: data)))
+                    self.capturedArqcHex = self.hexString(from: data)
+                    self.finishRead()
 
                 case MTU_EventType_AuthorizationRequest:
-                    // EMV chip/contactless ARQC + tag block for the processor.
-                    MTLog("🔐 AuthorizationRequest (ARQC) received — encrypted card captured")
-                    self.finishSale(.success(self.makeCardData(from: data)))
+                    // EMV chip/contactless ARQC block. Capture it, but wait for the
+                    // TransactionResult (batch) which carries the SRED card data.
+                    MTLog("🔐 AuthorizationRequest (ARQC) received")
+                    self.capturedArqcHex = self.hexString(from: data)
+
+                case MTU_EventType_TransactionResult:
+                    // Batch/clearing block — carries the encrypted SRED card data.
+                    MTLog("🧾 TransactionResult (batch) received — card read complete")
+                    self.capturedBatchHex = self.hexString(from: data)
+                    self.finishRead()
 
                 default:
                     break
@@ -313,38 +308,125 @@ extension MagTekReader: IEventSubscriber {
         case MTU_TransactionStatus_TransactionError, MTU_TransactionStatus_TransactionFailed,
              MTU_TransactionStatus_TransactionNotAccepted:
             finishSale(.failure(SaleError.failed("The transaction could not be completed on the reader.")))
+        case MTU_TransactionStatus_TransactionCompleted, MTU_TransactionStatus_TransactionApproved,
+             MTU_TransactionStatus_QuickChipDeferred:
+            // Fallback: if we captured the ARQC but never saw a TransactionResult,
+            // finish with what we have so the read still returns.
+            if !capturedArqcHex.isEmpty { finishRead() }
         default:
             break
         }
     }
+
+    /// Build the full read from the accumulated blocks and resume the read.
+    private func finishRead() {
+        guard saleContinuation != nil else { return }   // already finished
+        finishSale(.success(buildReadData()))
+    }
+
+    /// Parse the raw ARQC/batch blocks into the full read fields.
+    private func buildReadData() -> EncryptedCardData {
+        let arqc = Data(hex: capturedArqcHex)
+        let batch = Data(hex: capturedBatchHex)
+
+        let ksn = TLV.value(tag: [0xDF, 0xDF, 0x54], in: arqc)
+            ?? TLV.value(tag: [0xDF, 0xDF, 0x54], in: batch) ?? ""
+        let track2 = TLV.value(tag: [0xDF, 0xDF, 0x4D], in: arqc)
+            ?? TLV.value(tag: [0xDF, 0xDF, 0x4D], in: batch) ?? ""
+        // Encrypted card data (SRED) lives in the batch block's DFDF59.
+        let sred = TLV.value(tag: [0xDF, 0xDF, 0x59], in: batch) ?? ""
+        let serialHex = TLV.value(tag: [0xDF, 0xDF, 0x25], in: arqc)
+            ?? TLV.value(tag: [0xDF, 0xDF, 0x25], in: batch) ?? ""
+        let serial = Data(hex: serialHex).asciiString
+            ?? (device?.getInfo()?.deviceSerialNumber ?? "")
+        let holder = TLV.value(tag: [0x5F, 0x20], in: arqc).flatMap { Data(hex: $0).asciiString } ?? ""
+
+        return EncryptedCardData(
+            encryptedTrack: sred.isEmpty ? capturedArqcHex : sred,   // API emvSredData
+            ksn: ksn,
+            encryptionMethod: "dukpt",
+            entryMode: entryMode,
+            deviceSerialNumber: serial,
+            cardType: Self.cardType(fromTrack2Hex: track2),
+            transactionType: entryMode == .swipe ? "MSR" : "EMV",
+            cardHolderName: holder,
+            maskedTrack2: track2,
+            sredData: sred,
+            arqcData: capturedArqcHex,
+            batchData: capturedBatchHex
+        )
+    }
+
+    private func hexString(from data: IData?) -> String {
+        guard let bytes = data?.byteArray as Data? else { return "" }
+        return bytes.map { String(format: "%02X", $0) }.joined()
+    }
+
+    /// Brand from the track-2 PAN (first digit): hex track2 → ASCII → PAN.
+    private static func cardType(fromTrack2Hex hex: String) -> String {
+        guard let track = Data(hex: hex).asciiString else { return "" }
+        let digits = track.drop { !$0.isNumber }               // skip leading ';'
+        let pan = String(digits.prefix { $0 != "=" && $0 != "D" })
+        guard let first = pan.first else { return "" }
+        switch first {
+        case "4": return "VISA"
+        case "5", "2": return "MASTERCARD"
+        case "3": return "AMEX"
+        case "6": return "DISCOVER"
+        default: return ""
+        }
+    }
 }
 
-/// Minimal BER-TLV walker: first value (hex) for a multi-byte tag. Pulls the KSN.
+/// Scans a byte buffer for a BER-TLV tag (tolerant of length prefixes on the
+/// event data) and returns its value as hex. Robust enough to pull specific tags
+/// (KSN, track2, SRED, serial) out of the ARQC/batch blocks.
 private enum TLV {
-    static func firstValueHex(tag: [UInt8], in data: Data) -> String? {
+    static func value(tag: [UInt8], in data: Data) -> String? {
         let b = [UInt8](data)
+        guard !tag.isEmpty, b.count > tag.count else { return nil }
         var i = 0
-        while i < b.count {
-            var tagBytes: [UInt8] = [b[i]]
-            if b[i] & 0x1F == 0x1F {
-                repeat { i += 1; if i >= b.count { return nil }; tagBytes.append(b[i]) }
-                while b[i] & 0x80 == 0x80
+        while i + tag.count <= b.count {
+            if Array(b[i..<i + tag.count]) == tag {
+                var j = i + tag.count
+                guard j < b.count else { return nil }
+                var len = Int(b[j]); j += 1
+                if len & 0x80 != 0 {
+                    let n = len & 0x7F
+                    if n < 1 || n > 3 || j + n > b.count { i += 1; continue }
+                    len = 0
+                    for _ in 0..<n { len = (len << 8) | Int(b[j]); j += 1 }
+                }
+                if j + len <= b.count {
+                    return b[j..<j + len].map { String(format: "%02X", $0) }.joined()
+                }
             }
             i += 1
-            if i >= b.count { return nil }
-            var len = Int(b[i]); i += 1
-            if len & 0x80 != 0 {
-                let n = len & 0x7F
-                len = 0
-                for _ in 0..<n { if i >= b.count { return nil }; len = (len << 8) | Int(b[i]); i += 1 }
-            }
-            if i + len > b.count { return nil }
-            if tagBytes == tag {
-                return b[i..<i+len].map { String(format: "%02X", $0) }.joined()
-            }
-            i += len
         }
         return nil
+    }
+}
+
+private extension Data {
+    /// Build Data from a hex string (ignores non-hex chars). Empty for empty input.
+    init(hex: String) {
+        let chars = hex.filter { $0.isHexDigit }
+        var bytes = [UInt8]()
+        bytes.reserveCapacity(chars.count / 2)
+        var idx = chars.startIndex
+        while idx < chars.endIndex, chars.index(after: idx) < chars.endIndex {
+            let next = chars.index(idx, offsetBy: 2)
+            if let byte = UInt8(chars[idx..<next], radix: 16) { bytes.append(byte) }
+            idx = next
+        }
+        self = Data(bytes)
+    }
+
+    /// Printable ASCII interpretation, or nil if it isn't printable text.
+    var asciiString: String? {
+        guard !isEmpty, let s = String(data: self, encoding: .ascii),
+              s.allSatisfy({ $0.isASCII }) else { return nil }
+        return s
     }
 }
 
