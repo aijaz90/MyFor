@@ -14,7 +14,7 @@ struct PaymentView: View {
     @State private var reader = ReaderEngine()
     @State private var vm = FortePaymentProcessViewModel()
 
-    @State private var amount: Decimal = 25.00
+    @State private var amount: Decimal = 1.00
     @State private var showingBluetooth = false
     @State private var showingSettings = false
     @State private var showingManualCard = false
@@ -100,6 +100,7 @@ struct PaymentView: View {
                     vm.receiptTransactionID = nil
                 }
             }
+            .onAppear { AppLogger.shared.screen("PaymentView") }
         }
     }
 
@@ -203,14 +204,14 @@ struct PaymentView: View {
             // whole app → backend → Forte path (and the receipt) is testable without
             // the reader. Remove before production. The slide-reveal animation gives
             // this secondary action a distinct, deliberate feel before it fires.
-            SlideRevealButton(
-                title: "Test charge (sandbox card)",
-                systemImage: "creditcard.and.123",
-                isDisabled: testChargeDisabled
-            ) {
-                amountFocused = false
-                Task { await testCharge() }
-            }
+//            SlideRevealButton(
+//                title: "Test charge (sandbox card)",
+//                systemImage: "creditcard.and.123",
+//                isDisabled: testChargeDisabled
+//            ) {
+//                amountFocused = false
+//                Task { await testCharge() }
+//            }
 
             // Manual entry: opens the Forte-style card form in a web view. Works
             // without the reader (card-not-present / keyed sale).

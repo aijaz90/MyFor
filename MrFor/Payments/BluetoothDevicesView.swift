@@ -66,7 +66,10 @@ struct BluetoothDevicesView: View {
             } message: {
                 Text(readError ?? "")
             }
-            .onAppear { if reader.isReady { reader.start() } }
+            .onAppear {
+                AppLogger.shared.screen("BluetoothDevicesView")
+                if reader.isReady { reader.start() }
+            }
             .onDisappear { if !reading { reader.stop() } }
         }
     }
@@ -105,8 +108,10 @@ struct BluetoothDevicesView: View {
         let result = await reader.readCard(amount: readAmount)
         switch result {
         case .success(let data):
+            AppLogger.shared.reader("Card read OK (debug/verify)", data: data.loggableDict)
             readItem = ReadResultItem(data: data)
         case .failed(let message):
+            AppLogger.shared.error("Card read failed (debug/verify)", data: ["message": message])
             readError = message
         }
     }

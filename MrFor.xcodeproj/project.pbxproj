@@ -13,6 +13,9 @@
 		FA00000000000000000000B1 /* MTUSDK.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FA00000000000000000000F1 /* MTUSDK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FA00000000000000000000B2 /* MTSCRA.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FA00000000000000000000F2 /* MTSCRA.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FA00000000000000000000B3 /* CocoaMQTT.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FA00000000000000000000F3 /* CocoaMQTT.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FA00000000000000000000E4 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = FA00000000000000000000E2 /* FirebaseCore */; };
+		FA00000000000000000000E5 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = FA00000000000000000000E3 /* FirebaseFirestore */; };
+		FA00000000000000000000E6 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = FA00000000000000000000E7 /* FirebaseCrashlytics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -104,6 +107,9 @@
 				FA00000000000000000000A1 /* MTUSDK.xcframework in Frameworks */,
 				FA00000000000000000000A2 /* MTSCRA.xcframework in Frameworks */,
 				FA00000000000000000000A3 /* CocoaMQTT.xcframework in Frameworks */,
+				FA00000000000000000000E4 /* FirebaseCore in Frameworks */,
+				FA00000000000000000000E5 /* FirebaseFirestore in Frameworks */,
+				FA00000000000000000000E6 /* FirebaseCrashlytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -166,6 +172,7 @@
 				4B4C15022FFE8B4600B60680 /* Frameworks */,
 				4B4C15032FFE8B4600B60680 /* Resources */,
 				FA00000000000000000000C1 /* Embed Frameworks */,
+				FA00000000000000000000C2 /* Upload Crashlytics dSYMs */,
 			);
 			buildRules = (
 			);
@@ -176,6 +183,9 @@
 			);
 			name = MrFor;
 			packageProductDependencies = (
+				FA00000000000000000000E2 /* FirebaseCore */,
+				FA00000000000000000000E3 /* FirebaseFirestore */,
+				FA00000000000000000000E7 /* FirebaseCrashlytics */,
 			);
 			productName = MrFor;
 			productReference = 4B4C15052FFE8B4600B60680 /* MrFor.app */;
@@ -259,6 +269,9 @@
 			);
 			mainGroup = 4B4C14FC2FFE8B4600B60680;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				FA00000000000000000000E1 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 4B4C15062FFE8B4600B60680 /* Products */;
 			projectDirPath = "";
@@ -294,6 +307,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		FA00000000000000000000C2 /* Upload Crashlytics dSYMs */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+				"$(DWARF_DSYM_FOLDER_PATH)/$(DWARF_DSYM_FILE_NAME)",
+			);
+			name = "Upload Crashlytics dSYMs";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/crashlytics-upload.stamp",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\ntouch \"$DERIVED_FILE_DIR/crashlytics-upload.stamp\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		4B4C15012FFE8B4600B60680 /* Sources */ = {
@@ -367,11 +402,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = JHH96A9NRM;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -435,7 +470,7 @@
 				DEVELOPMENT_TEAM = JHH96A9NRM;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -474,6 +509,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -511,6 +547,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -652,6 +689,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		FA00000000000000000000E1 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		FA00000000000000000000E2 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FA00000000000000000000E1 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		FA00000000000000000000E3 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FA00000000000000000000E1 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		FA00000000000000000000E7 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FA00000000000000000000E1 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4B4C14FD2FFE8B4600B60680 /* Project object */;
 }

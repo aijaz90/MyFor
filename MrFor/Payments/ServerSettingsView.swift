@@ -36,6 +36,7 @@ struct ServerSettingsView: View {
                     environmentSwitcher
                     urlEditor
                     testSection
+                    debugLogsLink
                 }
                 .padding(20)
             }
@@ -49,7 +50,24 @@ struct ServerSettingsView: View {
             }
             .onChange(of: envRaw) { resetCheck() }
             .onChange(of: activeURL) { resetCheck() }
+            .onAppear { AppLogger.shared.screen("ServerSettingsView") }
         }
+    }
+
+    // MARK: Debug logs entry point
+
+    private var debugLogsLink: some View {
+        NavigationLink {
+            DebugLogsView()
+        } label: {
+            Label("Debug Logs", systemImage: "doc.text.magnifyingglass")
+                .font(.subheadline.weight(.semibold))
+        }
+        .buttonStyle(.plain)
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 14))
     }
 
     // MARK: Active endpoint banner

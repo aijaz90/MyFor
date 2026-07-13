@@ -14,6 +14,9 @@ import Foundation
 
 struct DynaFlexPaymentRequest: Encodable {
     var appDeviceId: String
+    /// The calling app's identifier (iOS bundle ID), requested by the backend
+    /// team so they can tell which client app made the call.
+    var applicationIdentifier: String
     var devicePaymentConfigurationId: String?
     var organizationId: String
     var memberId: String?
@@ -60,6 +63,8 @@ extension DynaFlexPaymentRequest {
     /// are filled dynamically in `make(amount:card:)`.
     enum Defaults {
         static let appDeviceId = "59e6cc40-7cc8-4cf9-9c6e-93be6be05551"
+        // Fallback only if Bundle.main.bundleIdentifier is somehow unavailable.
+        static let applicationIdentifierFallback = "com.cl.mrfor.MrFor"
         static let organizationId = "5eaab13e-c11b-4f97-b7fc-06e265fc5f89"
         static let referenceId = "b155f057-2ab8-493f-a1d7-f4ec8ac273cb"
         static let donationId = "b155f057-2ab8-493f-a1d7-f4ec8ac273cb"
@@ -82,6 +87,7 @@ extension DynaFlexPaymentRequest {
         func value(_ v: String, else fallback: String) -> String { v.isEmpty ? fallback : v }
         return DynaFlexPaymentRequest(
             appDeviceId: Defaults.appDeviceId,
+            applicationIdentifier: Bundle.main.bundleIdentifier ?? Defaults.applicationIdentifierFallback,
             devicePaymentConfigurationId: nil,
             organizationId: Defaults.organizationId,
             memberId: nil,
@@ -210,23 +216,60 @@ enum PaymentServiceError: Error {
 
 enum DynaFlexPaymentService {
     static func process(_ request: DynaFlexPaymentRequest) async -> Result<DynaFlexPaymentResponse, PaymentServiceError> {
-        guard let body = try? JSONEncoder().encode(request) else { return .failure(.encoding) }
+        guard let body = try? JSONEncoder().encode(request) else {
+            AppLogger.shared.guardFailure("Failed to encode DynaFlex payment request")
+            return .failure(.encoding)
+        }
         let urlRequest = APIEndpoint.dynaFlexPayment.makeRequest(body: body)
         MTLog("➡️ POST \(urlRequest.url?.absoluteString ?? "-") (DynaFlex payment)")
+        AppLogger.shared.apiRequest(
+            api: "dynaflex/payment",
+            method: "POST",
+            url: urlRequest.url?.absoluteString ?? "-",
+            body: redacted(request)
+        )
 
         do {
             let (data, response) = try await URLSession.shared.data(for: urlRequest)
             let status = (response as? HTTPURLResponse)?.statusCode ?? 0
             if let decoded = try? JSONDecoder().decode(DynaFlexPaymentResponse.self, from: data) {
                 MTLog("🏦 DynaFlex API (HTTP \(status)) success=\(decoded.success) msg=\(decoded.message ?? "-")")
+                AppLogger.shared.apiResponse(
+                    api: "dynaflex/payment",
+                    statusCode: status,
+                    body: ["success": decoded.success, "message": decoded.message ?? ""]
+                )
                 return .success(decoded)
             }
             let raw = String(data: data, encoding: .utf8) ?? ""
             MTLog("❌ DynaFlex API decode failed (HTTP \(status)): \(raw.prefix(200))")
+            AppLogger.shared.apiResponse(api: "dynaflex/payment", statusCode: status, error: String(raw.prefix(300)))
             return .failure(.badResponse(status: status, body: raw))
         } catch {
             MTLog("❌ DynaFlex API network error: \(error.localizedDescription)")
+            AppLogger.shared.apiResponse(api: "dynaflex/payment", statusCode: nil, error: error.localizedDescription)
             return .failure(.network(error.localizedDescription))
         }
+    }
+
+    /// Mirrors the request as a dictionary for logging, with the PCI-sensitive
+    /// fields (KSN, EMV SRED block) masked/previewed instead of stored in full.
+    private static func redacted(_ request: DynaFlexPaymentRequest) -> [String: Any] {
+        [
+            "applicationIdentifier": request.applicationIdentifier,
+            "organizationId": request.organizationId,
+            "amount": request.amount,
+            "currencyCode": request.currencyCode,
+            "sourceApp": request.sourceApp,
+            "paymentPurpose": request.paymentPurpose,
+            "referenceId": request.referenceId,
+            "deviceId": request.deviceId,
+            "readerType": request.readerType,
+            "readerSerialNumber": request.readerSerialNumber,
+            "deviceSerialNumber": request.deviceSerialNumber,
+            "cardType": request.cardType,
+            "ksnPreview": LogRedaction.hexPreview(request.ksn),
+            "emvSredDataPreview": LogRedaction.hexPreview(request.emvSredData),
+        ]
     }
 }

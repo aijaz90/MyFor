@@ -123,7 +123,9 @@ enum PaymentAPIClient {
 
     /// Prints the request as pretty JSON, labeled with the API name, so it can
     /// be pasted straight into Postman/Swagger while debugging. DEBUG-only —
-    /// never fires in a release build.
+    /// never fires in a release build. Also forwards a *redacted* copy to
+    /// `AppLogger` (local mirror + Firestore) — card number/CVV are never
+    /// persisted remotely, even for the sandbox test card.
     private static func logRequest(api: String, method: String, url: URL, body: [String: Any]?) {
         #if DEBUG
         var text = "\n🔵 API REQUEST — \(api)\n\(method) \(url.absoluteString)"
@@ -132,10 +134,12 @@ enum PaymentAPIClient {
         }
         print(text)
         #endif
+        AppLogger.shared.apiRequest(api: api, method: method, url: url.absoluteString, body: redacted(body))
     }
 
     /// Prints the response as pretty JSON, labeled with the same API name, so
     /// request/response pairs are easy to find and copy from the console.
+    /// Also forwards the response to `AppLogger` (local mirror + Firestore).
     private static func logResponse(api: String, statusCode: Int?, data: Data?) {
         #if DEBUG
         var text = "\n🟢 API RESPONSE — \(api)"
@@ -149,6 +153,28 @@ enum PaymentAPIClient {
         }
         print(text)
         #endif
+
+        var responseBody: [String: Any]?
+        if let data, let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+            responseBody = redacted(object)
+        }
+        AppLogger.shared.apiResponse(api: api, statusCode: statusCode, body: responseBody)
+    }
+
+    /// Strips PAN/CVV (and anything nested under a "card" key) before a
+    /// request/response body is sent anywhere persistent (Firestore, on-device
+    /// log mirror). The full body is only ever printed to the local DEBUG
+    /// console via `logRequest`/`logResponse` above.
+    private static func redacted(_ body: [String: Any]?) -> [String: Any]? {
+        guard var body else { return nil }
+        if var card = body["card"] as? [String: Any] {
+            if let number = card["accountNumber"] as? String {
+                card["accountNumber"] = LogRedaction.maskKeepingLast(number)
+            }
+            card["cvv"] = "•••"
+            body["card"] = card
+        }
+        return body
     }
 
     private static func prettyJSONString(_ object: Any) -> String? {

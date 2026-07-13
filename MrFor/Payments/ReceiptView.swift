@@ -53,6 +53,7 @@ struct ReceiptView: View {
                 }
             }
             .task { await load() }
+            .onAppear { AppLogger.shared.screen("ReceiptView") }
         }
     }
 

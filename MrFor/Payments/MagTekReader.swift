@@ -87,6 +87,7 @@ final class MagTekReader: NSObject, ReaderEngineProtocol {
     func connect(_ device: ReaderDevice) {
         guard let idevice = deviceTable[device.id] else {
             MTLog("⚠️ connect: no IDevice for id \(device.id)")
+            AppLogger.shared.guardFailure("connect: no IDevice for id", data: ["deviceId": device.id])
             return
         }
         stop()
@@ -94,6 +95,7 @@ final class MagTekReader: NSObject, ReaderEngineProtocol {
         connectionState = .connecting(device.id)
         connectedName = idevice.deviceName
         MTLog("🔗 Connecting to \(idevice.deviceName)…")
+        AppLogger.shared.reader("Connecting to reader", data: ["deviceName": idevice.deviceName])
         let subscribed = idevice.subscribeAll(self)
         // Opening the control interface establishes the connection; ConnectionState
         // events (see onEvent) then move us to .connected.
@@ -106,6 +108,7 @@ final class MagTekReader: NSObject, ReaderEngineProtocol {
             _ = device.unsubscribeAll(self)
             _ = device.getControl()?.close()
             MTLog("🔌 Disconnected from \(device.deviceName)")
+            AppLogger.shared.reader("Disconnected from reader", data: ["deviceName": device.deviceName])
         }
         device = nil
         connectedName = nil
@@ -177,13 +180,16 @@ final class MagTekReader: NSObject, ReaderEngineProtocol {
             connectionState = .connected(device.deviceName)
             connectedName = device.deviceName
             MTLog("✅ Connected to \(device.deviceName)")
+            AppLogger.shared.reader("Reader connected", data: ["deviceName": device.deviceName])
         case MTU_ConnectionState_Disconnected:
             connectionState = .idle
             connectedName = nil
             MTLog("🔌 Reader disconnected")
+            AppLogger.shared.reader("Reader disconnected")
         case MTU_ConnectionState_Error:
             connectionState = .failed("Reader connection error.")
             MTLog("❌ Reader connection error")
+            AppLogger.shared.error("Reader connection error")
         default:
             break
         }
@@ -348,7 +354,7 @@ extension MagTekReader: IEventSubscriber {
             entryMode: entryMode,
             deviceSerialNumber: serial,
             cardType: Self.cardType(fromTrack2Hex: track2),
-            transactionType: entryMode == .swipe ? "MSR" : "EMV",
+            transactionType: entryMode == .swipe ? "MSR" : "EMV", // find for insert type
             cardHolderName: holder,
             maskedTrack2: track2,
             sredData: sred,

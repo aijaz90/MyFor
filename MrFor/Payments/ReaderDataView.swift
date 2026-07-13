@@ -57,6 +57,7 @@ struct ReaderDataView: View {
                     Button("Done", action: onDone).fontWeight(.semibold).tint(AppTheme.primary)
                 }
             }
+            .onAppear { AppLogger.shared.screen("ReaderDataView") }
         }
     }
 

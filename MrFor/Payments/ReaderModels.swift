@@ -124,6 +124,28 @@ struct EncryptedCardData {
               let json = String(data: data, encoding: .utf8) else { return "" }
         return json
     }
+
+    /// The full reader read as a dictionary, for logging to `AppLogger`
+    /// (Firestore + local mirror). These fields are already DUKPT-encrypted
+    /// ciphertext (KSN/ARQC/SRED/batch/track) or non-sensitive metadata —
+    /// never a plaintext PAN — so it's safe to log in full for remote
+    /// debugging, unlike raw card numbers/CVV/PIN.
+    var loggableDict: [String: Any] {
+        [
+            "entryMode": entryMode.rawValue,
+            "encryptionMethod": encryptionMethod,
+            "transactionType": transactionType,
+            "deviceKSN": ksn,
+            "deviceSerialNumber": deviceSerialNumber,
+            "cardType": cardType,
+            "cardHolderName": cardHolderName,
+            "maskTrack2": maskedTrack2,
+            "encryptedTrack": encryptedTrack,
+            "sredData": sredData,
+            "arqcData": arqcData,
+            "batchData": batchData,
+        ]
+    }
 }
 
 /// Outcome of reading a card from the physical reader (before charging).
