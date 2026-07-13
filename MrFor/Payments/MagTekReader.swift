@@ -335,12 +335,17 @@ extension MagTekReader: IEventSubscriber {
         let arqc = Data(hex: capturedArqcHex)
         let batch = Data(hex: capturedBatchHex)
 
-        let ksn = TLV.value(tag: [0xDF, 0xDF, 0x54], in: arqc)
+        // Per Forte's DynaFlex II Go REST doc, all required fields come from the
+        // ARQC block: KSN = tag DFDF56, EMVSREDData = tag DFDF59, CardType =
+        // DFDF52. (DFDF54 carries the same KSN value; kept as a fallback.)
+        let ksn = TLV.value(tag: [0xDF, 0xDF, 0x56], in: arqc)
+            ?? TLV.value(tag: [0xDF, 0xDF, 0x54], in: arqc)
             ?? TLV.value(tag: [0xDF, 0xDF, 0x54], in: batch) ?? ""
         let track2 = TLV.value(tag: [0xDF, 0xDF, 0x4D], in: arqc)
             ?? TLV.value(tag: [0xDF, 0xDF, 0x4D], in: batch) ?? ""
-        // Encrypted card data (SRED) lives in the batch block's DFDF59.
-        let sred = TLV.value(tag: [0xDF, 0xDF, 0x59], in: batch) ?? ""
+        // EMVSREDData is the ARQC block's DFDF59 — NOT the batch block's (that one
+        // is a different value, "EMVSREDDataForBatch", and Forte can't decrypt it).
+        let sred = TLV.value(tag: [0xDF, 0xDF, 0x59], in: arqc) ?? ""
         let serialHex = TLV.value(tag: [0xDF, 0xDF, 0x25], in: arqc)
             ?? TLV.value(tag: [0xDF, 0xDF, 0x25], in: batch) ?? ""
         let serial = Data(hex: serialHex).asciiString

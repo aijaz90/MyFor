@@ -194,7 +194,19 @@ final class AppLogger {
         let screen = screen ?? currentScreen
 
         #if DEBUG
-        print("📋 [\(level.rawValue)] \(screen) \(function):\(line) — \(message)")
+        var consoleLine = "📋 [\(level.rawValue)] \(screen) \(function):\(line) — \(message)"
+        // Print the full data payload too (pretty JSON) so EVERYTHING shows in the
+        // Xcode console — reader fields, request bodies, responses, etc.
+        if let data, !data.isEmpty {
+            if JSONSerialization.isValidJSONObject(data),
+               let json = try? JSONSerialization.data(withJSONObject: data, options: [.prettyPrinted, .sortedKeys]),
+               let str = String(data: json, encoding: .utf8) {
+                consoleLine += "\n\(str)"
+            } else {
+                consoleLine += "\n\(data)"
+            }
+        }
+        print(consoleLine)
         #endif
 
         LocalLogStore.shared.append(localLine(level: level, message: message, screen: screen, file: file, function: function, line: line, data: data))

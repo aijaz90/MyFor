@@ -221,55 +221,52 @@ enum DynaFlexPaymentService {
             return .failure(.encoding)
         }
         let urlRequest = APIEndpoint.dynaFlexPayment.makeRequest(body: body)
-        MTLog("➡️ POST \(urlRequest.url?.absoluteString ?? "-") (DynaFlex payment)")
-        AppLogger.shared.apiRequest(
-            api: "dynaflex/payment",
-            method: "POST",
-            url: urlRequest.url?.absoluteString ?? "-",
-            body: redacted(request)
-        )
+        let url = urlRequest.url?.absoluteString ?? "-"
+
+        // Print the EXACT request body being POSTed (full, unredacted) so the
+        // console shows precisely what the API receives — the whole point of
+        // debugging DECRYPT TIMEOUT is seeing the real emvSredData/ksn sent.
+        let requestJSON = String(data: body, encoding: .utf8) ?? "<non-utf8 body>"
+        print("\n================ DYNAFLEX API REQUEST ================\nPOST \(url)\n\(requestJSON)\n=====================================================\n")
+        MTLog("➡️ POST \(url) (DynaFlex payment)")
+        AppLogger.shared.apiRequest(api: "dynaflex/payment", method: "POST", url: url, body: request.fullLoggableDict)
 
         do {
             let (data, response) = try await URLSession.shared.data(for: urlRequest)
             let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+            let raw = String(data: data, encoding: .utf8) ?? "<non-utf8 body>"
+
+            // Print the EXACT raw response body, in full.
+            print("\n================ DYNAFLEX API RESPONSE ===============\nHTTP \(status)\n\(raw)\n=====================================================\n")
+
             if let decoded = try? JSONDecoder().decode(DynaFlexPaymentResponse.self, from: data) {
                 MTLog("🏦 DynaFlex API (HTTP \(status)) success=\(decoded.success) msg=\(decoded.message ?? "-")")
                 AppLogger.shared.apiResponse(
-                    api: "dynaflex/payment",
-                    statusCode: status,
-                    body: ["success": decoded.success, "message": decoded.message ?? ""]
+                    api: "dynaflex/payment", statusCode: status,
+                    body: ["success": decoded.success, "message": decoded.message ?? "", "raw": raw]
                 )
                 return .success(decoded)
             }
-            let raw = String(data: data, encoding: .utf8) ?? ""
             MTLog("❌ DynaFlex API decode failed (HTTP \(status)): \(raw.prefix(200))")
-            AppLogger.shared.apiResponse(api: "dynaflex/payment", statusCode: status, error: String(raw.prefix(300)))
+            AppLogger.shared.apiResponse(api: "dynaflex/payment", statusCode: status, body: ["raw": raw], error: "decode failed")
             return .failure(.badResponse(status: status, body: raw))
         } catch {
+            print("\n================ DYNAFLEX API ERROR =================\n\(error.localizedDescription)\n=====================================================\n")
             MTLog("❌ DynaFlex API network error: \(error.localizedDescription)")
             AppLogger.shared.apiResponse(api: "dynaflex/payment", statusCode: nil, error: error.localizedDescription)
             return .failure(.network(error.localizedDescription))
         }
     }
 
-    /// Mirrors the request as a dictionary for logging, with the PCI-sensitive
-    /// fields (KSN, EMV SRED block) masked/previewed instead of stored in full.
-    private static func redacted(_ request: DynaFlexPaymentRequest) -> [String: Any] {
-        [
-            "applicationIdentifier": request.applicationIdentifier,
-            "organizationId": request.organizationId,
-            "amount": request.amount,
-            "currencyCode": request.currencyCode,
-            "sourceApp": request.sourceApp,
-            "paymentPurpose": request.paymentPurpose,
-            "referenceId": request.referenceId,
-            "deviceId": request.deviceId,
-            "readerType": request.readerType,
-            "readerSerialNumber": request.readerSerialNumber,
-            "deviceSerialNumber": request.deviceSerialNumber,
-            "cardType": request.cardType,
-            "ksnPreview": LogRedaction.hexPreview(request.ksn),
-            "emvSredDataPreview": LogRedaction.hexPreview(request.emvSredData),
-        ]
+}
+
+extension DynaFlexPaymentRequest {
+    /// The complete request as a dictionary — every field, full values (including
+    /// the full ksn + emvSredData ciphertext). Used for logging so the console
+    /// shows exactly what's sent. Safe: this is DUKPT ciphertext, never a PAN.
+    var fullLoggableDict: [String: Any] {
+        guard let data = try? JSONEncoder().encode(self),
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return [:] }
+        return obj
     }
 }
