@@ -351,6 +351,9 @@ extension MagTekReader: IEventSubscriber {
         let serial = Data(hex: serialHex).asciiString
             ?? (device?.getInfo()?.deviceSerialNumber ?? "")
         let holder = TLV.value(tag: [0x5F, 0x20], in: arqc).flatMap { Data(hex: $0).asciiString } ?? ""
+        // Forte's card_emv_data wants CardType as the numeric DFDF52 code (05/06/…).
+        let cardTypeCode = TLV.value(tag: [0xDF, 0xDF, 0x52], in: arqc)
+            ?? TLV.value(tag: [0xDF, 0xDF, 0x52], in: batch) ?? ""
 
         return EncryptedCardData(
             encryptedTrack: sred.isEmpty ? capturedArqcHex : sred,   // API emvSredData
@@ -359,6 +362,7 @@ extension MagTekReader: IEventSubscriber {
             entryMode: entryMode,
             deviceSerialNumber: serial,
             cardType: Self.cardType(fromTrack2Hex: track2),
+            cardTypeCode: cardTypeCode,
             transactionType: entryMode == .swipe ? "MSR" : "EMV", // find for insert type
             cardHolderName: holder,
             maskedTrack2: track2,

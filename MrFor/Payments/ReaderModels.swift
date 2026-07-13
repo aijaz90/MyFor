@@ -96,6 +96,7 @@ struct EncryptedCardData {
     let entryMode: CardEntryMode
     var deviceSerialNumber: String = "" // reader serial, from the SDK
     var cardType: String = ""           // e.g. "VISA", derived from track2
+    var cardTypeCode: String = ""       // Forte DFDF52 numeric code, e.g. "05"/"06"
 
     // Full raw read fields — for the debug screen and Swagger testing.
     var transactionType: String = ""   // "EMV" / "MSR"
