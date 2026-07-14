@@ -53,17 +53,52 @@ final class MagTekReader: NSObject, ReaderEngineProtocol {
     @ObservationIgnored private var capturedArqcHex = ""
     @ObservationIgnored private var capturedBatchHex = ""
 
+    // Auto-reconnect: remember the last connected reader and silently reconnect
+    // to it on launch (the BLE pairing bond survives app kills).
+    @ObservationIgnored private var autoReconnecting = false
+    @ObservationIgnored private var autoReconnectTimeout: Task<Void, Never>?
+    private static let savedReaderKey = "mrfor.saved_reader_id"
+    private var savedReaderId: String? {
+        get { UserDefaults.standard.string(forKey: Self.savedReaderKey) }
+        set { UserDefaults.standard.setValue(newValue, forKey: Self.savedReaderKey) }
+    }
+
     private enum SaleError: Error { case declined(String), cancelled, timeout, failed(String) }
 
     override init() {
         super.init()
         core.mtuSDKDelegate = self
         MTLog("MagTek engine ready (SDK linked)")
+        // Try to silently reconnect to the last paired reader. If BLE isn't on
+        // yet, didSystemUpdate(.bluetoothLEPoweredOn) will trigger it again.
+        startAutoReconnect()
+    }
+
+    /// Begin scanning to reconnect to the previously-paired reader, if any.
+    private func startAutoReconnect() {
+        guard let saved = savedReaderId, !connectionState.isConnected, !autoReconnecting else { return }
+        autoReconnecting = true
+        MTLog("🔁 Auto-reconnect: scanning for \(saved)…")
+        core.setDeviceType(MTU_DeviceType_MMS, andConnectionType: MTU_ConnectionType_BLUETOOTH_LE_EMV)
+        core.startDiscover()
+        // Give up quietly after a while so we don't scan forever if it's off/out of range.
+        autoReconnectTimeout?.cancel()
+        autoReconnectTimeout = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 15_000_000_000)
+            await MainActor.run {
+                guard let self, self.autoReconnecting else { return }
+                self.autoReconnecting = false
+                self.core.stopDiscover()
+                MTLog("🔁 Auto-reconnect: reader not found — stopped scanning")
+            }
+        }
     }
 
     // MARK: Discovery
 
     func start() {
+        // Already connected (e.g. auto-reconnected on launch) — don't reset/rescan.
+        if connectionState.isConnected { MTLog("🔍 Discovery skipped — already connected"); return }
         deviceTable.removeAll()
         devices.removeAll()
         connectionState = .scanning
@@ -94,6 +129,7 @@ final class MagTekReader: NSObject, ReaderEngineProtocol {
         self.device = idevice
         connectionState = .connecting(device.id)
         connectedName = idevice.deviceName
+        savedReaderId = device.id   // remember for auto-reconnect after an app kill
         MTLog("🔗 Connecting to \(idevice.deviceName)…")
         AppLogger.shared.reader("Connecting to reader", data: ["deviceName": idevice.deviceName])
         let subscribed = idevice.subscribeAll(self)
@@ -104,6 +140,10 @@ final class MagTekReader: NSObject, ReaderEngineProtocol {
     }
 
     func disconnect() {
+        // Explicit user disconnect — forget the reader so we don't auto-reconnect.
+        savedReaderId = nil
+        autoReconnecting = false
+        autoReconnectTimeout?.cancel()
         if let device {
             _ = device.unsubscribeAll(self)
             _ = device.getControl()?.close()
@@ -120,6 +160,13 @@ final class MagTekReader: NSObject, ReaderEngineProtocol {
     func readCard(amount: Decimal) async -> ReaderReadResult {
         guard let device else {
             return .failed("No reader connected. Open Bluetooth and connect the DynaFlex II Go first.")
+        }
+        // The reader runs one transaction at a time. If a read is already in
+        // flight (waiting for the card), don't start another — that would leak
+        // the pending continuation and the reader would reject the second start.
+        guard saleContinuation == nil else {
+            MTLog("⚠️ readCard ignored — a read is already in progress")
+            return .failed("A card read is already in progress. Present the card to the reader, or wait for it to time out.")
         }
 
         let transaction = ITransaction.amount(
@@ -215,6 +262,14 @@ extension MagTekReader: MTUSDKDelegate {
                 list.sort { $0.isLikelyReader && !$1.isLikelyReader }
                 self.devices = list
                 MTLog("📡 Found \(list.count) device(s): \(list.map { $0.name }.joined(separator: ", "))")
+
+                // Auto-reconnect: if the previously-paired reader just appeared, connect to it.
+                if self.autoReconnecting, let saved = self.savedReaderId, self.deviceTable[saved] != nil {
+                    self.autoReconnecting = false
+                    self.autoReconnectTimeout?.cancel()
+                    MTLog("🔁 Auto-reconnect: found \(saved) — connecting")
+                    self.connect(ReaderDevice(id: saved, name: saved, rssi: nil))
+                }
             }
         }
     }
@@ -226,6 +281,7 @@ extension MagTekReader: MTUSDKDelegate {
                 case .bluetoothLEPoweredOn:
                     self.isReady = true
                     MTLog("📶 Bluetooth powered on")
+                    self.startAutoReconnect()   // reconnect to the last paired reader
                 case .bluetoothLEPoweredOff, .bluetoothLEUnsupported:
                     self.isReady = false
                     self.connectionState = .failed("Bluetooth is off.")

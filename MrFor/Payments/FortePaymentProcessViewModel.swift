@@ -53,18 +53,20 @@ final class FortePaymentProcessViewModel {
             AppLogger.shared.reader("Card read OK", data: card.loggableDict)
             processingMessage = "Processing payment…"
 
-            // Using the DIRECT Forte API for now (see ForteDirectModels). The MMS
-            // backend path is kept and can be switched back to any time:
-            //   let result = await DynaFlexPaymentService.process(DynaFlexPaymentRequest.make(amount: amount, card: card))
-            let result = await ForteTransactionService.process(card: card, amount: amount)
+            // Using the MMS backend (Kiosk/dynaflex/payment) with the updated
+            // nested request shape. The direct-Forte path is kept but unused:
+            //   let fResult = await ForteTransactionService.process(card: card, amount: amount)
+            let result = await DynaFlexPaymentService.process(DynaFlexPaymentRequest.make(amount: amount, card: card))
 
             switch result {
             case .success(let response):
-                if response.isApproved {
-                    alert = .success("Payment Successful", response.displayMessage)
+                if response.success {
+                    alert = .success("Payment Successful",
+                                     response.message ?? "Your payment was completed successfully.")
                     AppLogger.shared.endPayment(result: "success")
                 } else {
-                    alert = .failure("Payment Failed", response.displayMessage)
+                    alert = .failure("Payment Failed",
+                                     response.message ?? "The payment could not be completed.")
                     AppLogger.shared.endPayment(result: "declined")
                 }
             case .failure(let error):

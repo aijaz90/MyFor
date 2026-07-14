@@ -14,14 +14,12 @@ import Foundation
 
 struct DynaFlexPaymentRequest: Encodable {
     var appDeviceId: String
-    /// The calling app's identifier (iOS bundle ID), requested by the backend
-    /// team so they can tell which client app made the call.
-    var applicationIdentifier: String
     var devicePaymentConfigurationId: String?
     var organizationId: String
     var memberId: String?
 
     var amount: Double
+    var serviceFeeAmount: Double?
     var currencyCode: String
 
     var sourceApp: String
@@ -43,28 +41,42 @@ struct DynaFlexPaymentRequest: Encodable {
     var readerType: String
     var readerSerialNumber: String
 
-    // --- Dynamic, from the MagTek reader read ---
-    var ksn: String
-    var deviceSerialNumber: String
-    var emvSredData: String
-    var cardType: String
+    var billingAddress: BillingAddress
 
-    var firstName: String
-    var lastName: String
-    var email: String?
-    var phoneNumber: String?
+    // Reader read data, nested (new backend shape).
+    var cardEmvData: CardEmvData
 
     var remarks: String
+
+    struct BillingAddress: Encodable {
+        var firstName: String
+        var lastName: String
+        var phone: String?
+        var physicalAddress: PhysicalAddress?
+    }
+    struct PhysicalAddress: Encodable {
+        var streetLine1: String?
+        var streetLine2: String?
+        var locality: String?
+        var region: String?
+        var postalCode: String?
+    }
+    struct CardEmvData: Encodable {
+        var transactionOutput: TransactionOutput
+    }
+    struct TransactionOutput: Encodable {
+        var ksn: String
+        var deviceSerialNumber: String
+        var emvSredData: String
+        var cardType: String   // Forte DFDF52 numeric code, e.g. "05"/"06"
+    }
 }
 
 extension DynaFlexPaymentRequest {
-    /// Static payload values (from the API sample). Change these to your real
-    /// organization / campaign references. The four reader fields and `amount`
-    /// are filled dynamically in `make(amount:card:)`.
+    /// Static payload values. Change these to your real organization / campaign
+    /// references. The reader fields + amount are filled in `make(amount:card:)`.
     enum Defaults {
         static let appDeviceId = "59e6cc40-7cc8-4cf9-9c6e-93be6be05551"
-        // Fallback only if Bundle.main.bundleIdentifier is somehow unavailable.
-        static let applicationIdentifierFallback = "com.cl.mrfor.MrFor"
         static let organizationId = "5eaab13e-c11b-4f97-b7fc-06e265fc5f89"
         static let referenceId = "b155f057-2ab8-493f-a1d7-f4ec8ac273cb"
         static let donationId = "b155f057-2ab8-493f-a1d7-f4ec8ac273cb"
@@ -74,12 +86,10 @@ extension DynaFlexPaymentRequest {
         static let deviceId = "KIOSK-001"
         static let readerType = "MagTekDynaFlexIIGo"
         static let readerSerialNumber = "DYNAFLEX-001"
-        static let firstName = "Guest"
-        static let lastName = "Donor"
         static let remarks = "Kiosk DynaFlex donation test payment"
         // Fallbacks used only if the reader doesn't supply a value.
         static let deviceSerialNumber = "MTDYNAFLEX001"
-        static let cardType = "VISA"
+        static let cardTypeCode = "05"
     }
 
     /// Build the request: static defaults + the reader's dynamic fields + amount.
@@ -87,11 +97,11 @@ extension DynaFlexPaymentRequest {
         func value(_ v: String, else fallback: String) -> String { v.isEmpty ? fallback : v }
         return DynaFlexPaymentRequest(
             appDeviceId: Defaults.appDeviceId,
-            applicationIdentifier: Bundle.main.bundleIdentifier ?? Defaults.applicationIdentifierFallback,
             devicePaymentConfigurationId: nil,
             organizationId: Defaults.organizationId,
             memberId: nil,
             amount: NSDecimalNumber(decimal: amount).doubleValue,
+            serviceFeeAmount: nil,
             currencyCode: "USD",
             sourceApp: Defaults.sourceApp,
             paymentPurpose: Defaults.paymentPurpose,
@@ -107,15 +117,25 @@ extension DynaFlexPaymentRequest {
             deviceId: Defaults.deviceId,
             readerType: Defaults.readerType,
             readerSerialNumber: Defaults.readerSerialNumber,
-            // Dynamic — from the reader:
-            ksn: card.ksn,
-            deviceSerialNumber: value(card.deviceSerialNumber, else: Defaults.deviceSerialNumber),
-            emvSredData: card.encryptedTrack,
-            cardType: value(card.cardType, else: Defaults.cardType),
-            firstName: Defaults.firstName,
-            lastName: Defaults.lastName,
-            email: nil,
-            phoneNumber: nil,
+            billingAddress: BillingAddress(
+                firstName: "Jennifer",
+                lastName: "McFly",
+                phone: "444-444-4444",
+                physicalAddress: PhysicalAddress(
+                    streetLine1: "8003 Clock Tower Ln",
+                    streetLine2: "Suite 200",
+                    locality: "Hill Valley",
+                    region: "CA",
+                    postalCode: "46203"
+                )
+            ),
+            cardEmvData: CardEmvData(transactionOutput: TransactionOutput(
+                // Dynamic — from the reader read:
+                ksn: card.ksn,
+                deviceSerialNumber: value(card.deviceSerialNumber, else: Defaults.deviceSerialNumber),
+                emvSredData: card.sredData.isEmpty ? card.encryptedTrack : card.sredData,
+                cardType: value(card.cardTypeCode, else: Defaults.cardTypeCode)
+            )),
             remarks: Defaults.remarks
         )
     }
