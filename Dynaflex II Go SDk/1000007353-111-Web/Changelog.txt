@@ -1,0 +1,86 @@
+**********************************************************************************
+1000007353 	MAGTEK UNIVERSAL SDK FOR MMS DEVICES (IOS)
+**********************************************************************************
+Revision 111		Date:05-25-2026
+
+1. SDK API version 219
+2. MTUSDK Omni Demo version 2.0.8
+3. Extended Mifare support for DesFire Mini, DesFire EV1/EV2/EV3, Plus EV1/EV2/SE/X.
+4. Added support for mDL.
+5. Added deletFile and playSound.
+6. Added NFC card emulation URL.
+7. Added Personal Info Entry.
+8. Added mobile credential for Apple ECP2.
+9. Added NFC APDU Pass-Through.
+**********************************************************************************
+Revision 110		Date:11-11-2025
+
+1. SDK API version 218
+2. Add "DisplayAmountForQuickChip" in transaction 
+3. Fix the big amount conversion issue.
+4. MTUSDK Omni Demo version 2.0.6
+**********************************************************************************
+Revision 109		Date:06-25-2025
+
+1. SDK API version 216
+2. Updated Omni manual for MQTT mTLS.
+3. Added Programmer's manual.
+**********************************************************************************
+Revision 108		Date:06-03-2025
+
+1. SDK API version 216
+2. Modified the CocoaMQTT to static link StartScream and AsyncSocket. Remove the external reference to those two libraries.
+**********************************************************************************
+Revision 107		Date:05-09-2025
+
+1. SDK API version 216.
+2. Omni App version 2.0.5.
+3. Support for MQTT. 
+4. Fix the Bluetooth LE scanning issue (first scanning only report one device).
+ 
+**********************************************************************************
+Revision 106		Date:01-26-2025
+
+1. SDK API version 215 
+2. Support multiple instance 
+3. Use startDiscover/stopDiscover for both iAP2/BluetoothLE 
+4. Fix the issue to re-create device from Bluetooth address 
+5. Update MTAESDUKPT framework to 1.0.1, fixed decryption issue 
+6. Fix the open/close device issue when switching tab 
+7. Fix the crashing issue in Bluetooth LE 
+8. Fix the no device reporting in scanning issue in Bluetooth LE
+**********************************************************************************
+Revision 105		Date:01-27-2025
+
+Fixed issue with currency code
+
+**********************************************************************************
+Revision 104		Date:10-22-2024
+
+1. Fix missing 2-byte length at start of ARQC.
+2. Add currency code tag to transaction.
+3. MTUSDK Omni Demo version 2.0.2 build 32.
+**********************************************************************************
+Revision 103		Date:08-12-2024
+
+1. Updated the signature for delegate onDeviceList() from
+   parameter connectionType to withConnectionType.
+**********************************************************************************
+Revision 102		Date:07-25-2024
+
+1. App version 1.0.1 Build 23.
+2. Add support for UserSelection.
+3. Add support for Enhanced Application Selection.
+4. Add support for NFC tag.
+5. Fix excel file parsing issue in MTUSDK Sample.
+**********************************************************************************
+Revision 101		Date:03-24-2024
+
+1. App version 1.0.0 Build 15
+2. Add support for DynaFlex II Go iAP2.
+3. Add support for DynaFlex II Go BLE.
+**********************************************************************************
+Revision 100		Date:09-26-2023
+
+Initial Release.
+**********************************************************************************

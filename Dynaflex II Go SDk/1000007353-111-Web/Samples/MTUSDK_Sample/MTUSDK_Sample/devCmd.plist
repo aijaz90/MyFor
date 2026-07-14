@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>No.</key>
+		<string>0</string>
+		<key>deviceName</key>
+		<string>Firmware Version</string>
+	</dict>
+	<dict>
+		<key>No.</key>
+		<string>1</string>
+		<key>deviceName</key>
+		<string>Device Serial Number</string>
+	</dict>
+	<dict>
+		<key>No.</key>
+		<string>2</string>
+		<key>deviceName</key>
+		<string>Firmware Hash</string>
+	</dict>
+	<dict>
+		<key>No.</key>
+		<string>3</string>
+		<key>deviceName</key>
+		<string>Boot1 Version</string>
+	</dict>
+	<dict>
+		<key>No.</key>
+		<string>4</string>
+		<key>deviceName</key>
+		<string>Tamper Status</string>
+	</dict>
+	<dict>
+		<key>No.</key>
+		<string>5</string>
+		<key>deviceName</key>
+		<string>WLAN Firmware</string>
+	</dict>
+	<dict>
+		<key>No.</key>
+		<string>6</string>
+		<key>deviceName</key>
+		<string>BLE Firmware</string>
+	</dict>
+	<dict>
+		<key>No.</key>
+		<string>7</string>
+		<key>deviceName</key>
+		<string>Battery Level</string>
+	</dict>
+</array>
+</plist>

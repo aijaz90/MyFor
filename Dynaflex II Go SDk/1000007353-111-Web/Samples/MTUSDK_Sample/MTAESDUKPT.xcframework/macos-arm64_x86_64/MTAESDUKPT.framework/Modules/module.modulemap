@@ -1,0 +1,6 @@
+framework module MTAESDUKPT {
+  umbrella header "MTAESDUKPT.h"
+  export *
+
+  module * { export * }
+}

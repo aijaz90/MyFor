@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Settings View Controller-->
+        <scene sceneID="s0d-6b-0kx">
+            <objects>
+                <viewController restorationIdentifier="SettingsView" storyboardIdentifier="SettingsView" id="Y6W-OH-hqX" customClass="SettingsViewController" customModule="MTUSDK_Omni" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="VR3-t2-LFv" userLabel="StackViewAddress">
+                                <rect key="frame" x="10" y="128" width="373" height="40"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="U1T-SO-8y0">
+                                        <rect key="frame" x="0.0" y="0.0" width="290.33333333333331" height="40"/>
+                                        <color key="tintColor" systemColor="systemBlueColor"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="filled" title="Select Device">
+                                            <fontDescription key="titleFontDescription" type="system" pointSize="17"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <action selector="selectDeviceTapped" destination="Y6W-OH-hqX" eventType="touchUpInside" id="5Gd-KJ-uv1"/>
+                                            <segue destination="6fs-bR-lAS" kind="show" id="p9w-7C-4be"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="isT-gx-Mcj">
+                                        <rect key="frame" x="298.33333333333331" y="0.0" width="74.666666666666686" height="40"/>
+                                        <color key="tintColor" systemColor="systemBlueColor"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="filled" image="connect" title=""/>
+                                        <connections>
+                                            <action selector="topConnect" destination="Y6W-OH-hqX" eventType="touchUpInside" id="LZZ-km-qFJ"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="5qI-5v-NbC"/>
+                                    <constraint firstItem="isT-gx-Mcj" firstAttribute="width" secondItem="VR3-t2-LFv" secondAttribute="width" multiplier="0.2" id="lz5-Q9-AeM"/>
+                                </constraints>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="II8-hJ-YLh" userLabel="USB Mode StackView">
+                                <rect key="frame" x="10" y="178" width="373" height="180"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VyF-Ju-A6c">
+                                        <rect key="frame" x="0.0" y="0.0" width="373" height="84"/>
+                                        <string key="text">First, use BLE or WebSocket to connect to the device, then select a USB connection mode, and then tap the Set button to activate it. The Auto Detect means iAP2 with auto toggle to HID.</string>
+                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="HKt-CT-n6a">
+                                        <rect key="frame" x="0.0" y="92" width="373" height="41"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="8nN-t7-HLZ"/>
+                                        </constraints>
+                                        <segments>
+                                            <segment title="Auto Detect"/>
+                                            <segment title="iAP2"/>
+                                            <segment title="HID"/>
+                                        </segments>
+                                        <connections>
+                                            <action selector="switchUSBModeTapped:" destination="Y6W-OH-hqX" eventType="valueChanged" id="7jR-ha-nu3"/>
+                                        </connections>
+                                    </segmentedControl>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ucS-dE-ajn">
+                                        <rect key="frame" x="0.0" y="140" width="373" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="k20-1c-GXx"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="filled" title="Set USB Connection Mode">
+                                            <fontDescription key="titleFontDescription" type="system" pointSize="17"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <action selector="setUSBModeTapped:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="ue8-zX-DZF"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="180" id="nLV-Gp-KFv"/>
+                                </constraints>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Th9-Qa-TXj" userLabel="LogStackView">
+                                <rect key="frame" x="10" y="368" width="373" height="296"/>
+                                <subviews>
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="eWu-IE-Tle">
+                                        <rect key="frame" x="0.0" y="0.0" width="373" height="208"/>
+                                        <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                    </textView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pgc-us-NL3">
+                                        <rect key="frame" x="0.0" y="216" width="373" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="Bre-7a-tuA"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="filled" title="Clear">
+                                            <fontDescription key="titleFontDescription" type="system" pointSize="17"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <action selector="clearText" destination="Y6W-OH-hqX" eventType="touchUpInside" id="Uul-xt-wnk"/>
+                                        </connections>
+                                    </button>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Buw-r5-2S3" userLabel="API Log StackView">
+                                        <rect key="frame" x="0.0" y="264" width="373" height="32"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable API Runtime Log" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wsT-07-nJP">
+                                                <rect key="frame" x="0.0" y="0.0" width="305" height="32"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" title="timingLogSwitch" translatesAutoresizingMaskIntoConstraints="NO" id="f1L-eH-qYX">
+                                                <rect key="frame" x="313" y="0.0" width="62" height="32"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="60" id="th1-lx-z7N"/>
+                                                </constraints>
+                                                <connections>
+                                                    <action selector="toggleTimingLogFlagTapped:" destination="Y6W-OH-hqX" eventType="valueChanged" id="d7l-LE-UGV"/>
+                                                </connections>
+                                            </switch>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="32" id="6il-T0-aRH"/>
+                                            <constraint firstItem="f1L-eH-qYX" firstAttribute="centerY" secondItem="wsT-07-nJP" secondAttribute="centerY" id="cMu-NM-NZw"/>
+                                        </constraints>
+                                    </stackView>
+                                </subviews>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="yPo-NB-09K" userLabel="VersionStackView">
+                                <rect key="frame" x="10" y="674" width="373" height="100"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zHT-9G-kdQ">
+                                        <rect key="frame" x="154.33333333333334" y="0.0" width="64.333333333333343" height="43.333333333333336"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="FAQs">
+                                            <fontDescription key="titleFontDescription" type="system" pointSize="17"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <action selector="faqsButtonTapped:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="nZE-gv-oLq"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Version 1.0.0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fuB-MO-KeF">
+                                        <rect key="frame" x="138.66666666666666" y="51.333333333333371" width="96" height="20.333333333333329"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" text="Copyright © 2024-2026 MagTek, Inc." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EvK-qL-TAK">
+                                        <rect key="frame" x="43" y="79.666666666666629" width="287.33333333333331" height="20.333333333333329"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="oXp-3p-jBe"/>
+                                </constraints>
+                            </stackView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="II8-hJ-YLh" secondAttribute="trailing" constant="10" id="8Yl-mF-Ie2"/>
+                            <constraint firstItem="yPo-NB-09K" firstAttribute="top" secondItem="Th9-Qa-TXj" secondAttribute="bottom" constant="10" id="ACJ-gG-jcY"/>
+                            <constraint firstItem="yPo-NB-09K" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="NMQ-SI-a0I"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="yPo-NB-09K" secondAttribute="bottom" constant="10" id="TA7-UE-i4v"/>
+                            <constraint firstItem="VR3-t2-LFv" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="10" id="UXv-Vo-uqb"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="Th9-Qa-TXj" secondAttribute="trailing" constant="10" id="Y32-li-pl2"/>
+                            <constraint firstItem="II8-hJ-YLh" firstAttribute="top" secondItem="VR3-t2-LFv" secondAttribute="bottom" constant="10" id="YE4-l4-Gbu"/>
+                            <constraint firstItem="Th9-Qa-TXj" firstAttribute="top" secondItem="II8-hJ-YLh" secondAttribute="bottom" constant="10" id="aig-k6-V7D"/>
+                            <constraint firstItem="VR3-t2-LFv" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="bED-ba-3qU"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="VR3-t2-LFv" secondAttribute="trailing" constant="10" id="bmC-i2-5qU"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="yPo-NB-09K" secondAttribute="trailing" constant="10" id="gyz-oP-BPV"/>
+                            <constraint firstItem="Th9-Qa-TXj" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="jU2-IO-7l5"/>
+                            <constraint firstItem="II8-hJ-YLh" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="zBN-tf-uvB"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="btnDisplayIP" destination="U1T-SO-8y0" id="QgX-4t-NdN"/>
+                        <outlet property="btnTopConnect" destination="isT-gx-Mcj" id="r4M-PV-hMX"/>
+                        <outlet property="timingLogSwitch" destination="f1L-eH-qYX" id="sJ8-Ph-GlG"/>
+                        <outlet property="txtData" destination="eWu-IE-Tle" id="QKZ-uo-15v"/>
+                        <outlet property="usbModeSegmentedControl" destination="HKt-CT-n6a" id="SCq-iW-WxG"/>
+                        <outlet property="versionLabel" destination="fuB-MO-KeF" id="8Hm-19-ib4"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-144.27480916030532" y="-1.4084507042253522"/>
+        </scene>
+        <!--SelectDevice-->
+        <scene sceneID="0la-Fs-nei">
+            <objects>
+                <viewControllerPlaceholder storyboardName="SelectDevice" referencedIdentifier="SelectDevice" id="6fs-bR-lAS" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="l2T-UW-88u"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="btt-00-K9Z" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-144" y="399"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="connect" width="24" height="24"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemBlueColor">
+            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>

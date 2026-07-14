@@ -1,0 +1,66 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 6.2.3 effective-5.10 (swiftlang-6.2.3.3.21 clang-1700.6.3.2)
+// swift-module-flags: -target x86_64-apple-ios13.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -module-name MTAESDUKPT
+// swift-module-flags-ignorable:  -formal-cxx-interoperability-mode=off -interface-compiler-version 6.2.3
+import CommonCrypto
+import Foundation
+@_exported import MTAESDUKPT
+import Swift
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+public enum SelectableCardDataField {
+  case cardHolderName
+  case primaryAccountNumber
+  case expirationDate
+  case serviceCode
+  case track1DiscretionaryData
+  case track2DiscretionaryData
+  public static func == (a: MTAESDUKPT.SelectableCardDataField, b: MTAESDUKPT.SelectableCardDataField) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct SelectableCardData {
+  public let cardDataFields: Swift.Set<MTAESDUKPT.SelectableCardDataField>
+  public let cardHolderName: Swift.String?
+  public let primaryAccountNumber: Swift.String?
+  public let expirationDate: Swift.String?
+  public let serviceCode: Swift.String?
+  public let track1DiscretionaryData: Swift.String?
+  public let track2DiscretionaryData: Swift.String?
+}
+public class MTEncryptedData {
+  public static let SdkVersion: Swift.String
+  public init(selectableCardDataKey: Swift.String)
+  public func getSelectableCardData(arqc: Swift.String) throws -> MTAESDUKPT.SelectableCardData
+  public func getSelectableCardData(arqc: Foundation.Data) throws -> MTAESDUKPT.SelectableCardData
+  public func getSelectableCardData(scdeData: Swift.String, scdeKsn: Swift.String, scdeKeyInfo: Swift.String) throws -> MTAESDUKPT.SelectableCardData
+  @objc deinit
+}
+public enum MTError : Swift.Error {
+  case StringError(Swift.String)
+}
+extension Swift.String {
+  public var byteArrayFromHexString: [Swift.UInt8] {
+    get
+  }
+  public var dataFromHexString: Foundation.Data {
+    get
+  }
+  public var stringFromHexString: Swift.String {
+    get
+  }
+}
+extension Swift.String : Swift.Error {
+}
+extension Swift.String : Foundation.LocalizedError {
+  #if compiler(>=5.3) && $NonescapableTypes
+  public var errorDescription: Swift.String? {
+    get
+  }
+  #endif
+}
+extension MTAESDUKPT.SelectableCardDataField : Swift.Equatable {}
+extension MTAESDUKPT.SelectableCardDataField : Swift.Hashable {}

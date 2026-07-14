@@ -1,0 +1,6 @@
+framework module MTUSDK {
+  umbrella header "MTUSDK.h"
+  export *
+
+  module * { export * }
+}

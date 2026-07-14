@@ -1,0 +1,2059 @@
+{
+  "ABIRoot": {
+    "kind": "Root",
+    "name": "MTAESDUKPT",
+    "printedName": "MTAESDUKPT",
+    "children": [
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MTAESDUKPT",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "SelectableCardDataField",
+        "printedName": "SelectableCardDataField",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "cardHolderName",
+            "printedName": "cardHolderName",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MTAESDUKPT.SelectableCardDataField.Type) -> MTAESDUKPT.SelectableCardDataField",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "SelectableCardDataField",
+                    "printedName": "MTAESDUKPT.SelectableCardDataField",
+                    "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MTAESDUKPT.SelectableCardDataField.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "SelectableCardDataField",
+                        "printedName": "MTAESDUKPT.SelectableCardDataField",
+                        "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO14cardHolderNameyA2CmF",
+            "mangledName": "$s10MTAESDUKPT23SelectableCardDataFieldO14cardHolderNameyA2CmF",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "RawDocComment"
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "primaryAccountNumber",
+            "printedName": "primaryAccountNumber",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MTAESDUKPT.SelectableCardDataField.Type) -> MTAESDUKPT.SelectableCardDataField",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "SelectableCardDataField",
+                    "printedName": "MTAESDUKPT.SelectableCardDataField",
+                    "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MTAESDUKPT.SelectableCardDataField.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "SelectableCardDataField",
+                        "printedName": "MTAESDUKPT.SelectableCardDataField",
+                        "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO20primaryAccountNumberyA2CmF",
+            "mangledName": "$s10MTAESDUKPT23SelectableCardDataFieldO20primaryAccountNumberyA2CmF",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "RawDocComment"
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "expirationDate",
+            "printedName": "expirationDate",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MTAESDUKPT.SelectableCardDataField.Type) -> MTAESDUKPT.SelectableCardDataField",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "SelectableCardDataField",
+                    "printedName": "MTAESDUKPT.SelectableCardDataField",
+                    "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MTAESDUKPT.SelectableCardDataField.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "SelectableCardDataField",
+                        "printedName": "MTAESDUKPT.SelectableCardDataField",
+                        "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO14expirationDateyA2CmF",
+            "mangledName": "$s10MTAESDUKPT23SelectableCardDataFieldO14expirationDateyA2CmF",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "RawDocComment"
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "serviceCode",
+            "printedName": "serviceCode",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MTAESDUKPT.SelectableCardDataField.Type) -> MTAESDUKPT.SelectableCardDataField",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "SelectableCardDataField",
+                    "printedName": "MTAESDUKPT.SelectableCardDataField",
+                    "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MTAESDUKPT.SelectableCardDataField.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "SelectableCardDataField",
+                        "printedName": "MTAESDUKPT.SelectableCardDataField",
+                        "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO11serviceCodeyA2CmF",
+            "mangledName": "$s10MTAESDUKPT23SelectableCardDataFieldO11serviceCodeyA2CmF",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "RawDocComment"
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "track1DiscretionaryData",
+            "printedName": "track1DiscretionaryData",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MTAESDUKPT.SelectableCardDataField.Type) -> MTAESDUKPT.SelectableCardDataField",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "SelectableCardDataField",
+                    "printedName": "MTAESDUKPT.SelectableCardDataField",
+                    "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MTAESDUKPT.SelectableCardDataField.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "SelectableCardDataField",
+                        "printedName": "MTAESDUKPT.SelectableCardDataField",
+                        "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO019track1DiscretionaryD0yA2CmF",
+            "mangledName": "$s10MTAESDUKPT23SelectableCardDataFieldO019track1DiscretionaryD0yA2CmF",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "RawDocComment"
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "track2DiscretionaryData",
+            "printedName": "track2DiscretionaryData",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MTAESDUKPT.SelectableCardDataField.Type) -> MTAESDUKPT.SelectableCardDataField",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "SelectableCardDataField",
+                    "printedName": "MTAESDUKPT.SelectableCardDataField",
+                    "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MTAESDUKPT.SelectableCardDataField.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "SelectableCardDataField",
+                        "printedName": "MTAESDUKPT.SelectableCardDataField",
+                        "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO019track2DiscretionaryD0yA2CmF",
+            "mangledName": "$s10MTAESDUKPT23SelectableCardDataFieldO019track2DiscretionaryD0yA2CmF",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "RawDocComment"
+            ]
+          },
+          {
+            "kind": "Function",
+            "name": "==",
+            "printedName": "==(_:_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "SelectableCardDataField",
+                "printedName": "MTAESDUKPT.SelectableCardDataField",
+                "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "SelectableCardDataField",
+                "printedName": "MTAESDUKPT.SelectableCardDataField",
+                "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO2eeoiySbAC_ACtFZ",
+            "mangledName": "$s10MTAESDUKPT23SelectableCardDataFieldO2eeoiySbAC_ACtFZ",
+            "moduleName": "MTAESDUKPT",
+            "static": true,
+            "implicit": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Var",
+            "name": "hashValue",
+            "printedName": "hashValue",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "usr": "s:Si"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO9hashValueSivp",
+            "mangledName": "$s10MTAESDUKPT23SelectableCardDataFieldO9hashValueSivp",
+            "moduleName": "MTAESDUKPT",
+            "implicit": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO9hashValueSivg",
+                "mangledName": "$s10MTAESDUKPT23SelectableCardDataFieldO9hashValueSivg",
+                "moduleName": "MTAESDUKPT",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "name": "hash",
+            "printedName": "hash(into:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Hasher",
+                "printedName": "Swift.Hasher",
+                "paramValueOwnership": "InOut",
+                "usr": "s:s6HasherV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO4hash4intoys6HasherVz_tF",
+            "mangledName": "$s10MTAESDUKPT23SelectableCardDataFieldO4hash4intoys6HasherVz_tF",
+            "moduleName": "MTAESDUKPT",
+            "implicit": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Enum",
+        "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO",
+        "mangledName": "$s10MTAESDUKPT23SelectableCardDataFieldO",
+        "moduleName": "MTAESDUKPT",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "SelectableCardData",
+        "printedName": "SelectableCardData",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "cardDataFields",
+            "printedName": "cardDataFields",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Set",
+                "printedName": "Swift.Set<MTAESDUKPT.SelectableCardDataField>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "SelectableCardDataField",
+                    "printedName": "MTAESDUKPT.SelectableCardDataField",
+                    "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO"
+                  }
+                ],
+                "usr": "s:Sh"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MTAESDUKPT18SelectableCardDataV04cardD6FieldsShyAA0bcD5FieldOGvp",
+            "mangledName": "$s10MTAESDUKPT18SelectableCardDataV04cardD6FieldsShyAA0bcD5FieldOGvp",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Set",
+                    "printedName": "Swift.Set<MTAESDUKPT.SelectableCardDataField>",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "SelectableCardDataField",
+                        "printedName": "MTAESDUKPT.SelectableCardDataField",
+                        "usr": "s:10MTAESDUKPT23SelectableCardDataFieldO"
+                      }
+                    ],
+                    "usr": "s:Sh"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MTAESDUKPT18SelectableCardDataV04cardD6FieldsShyAA0bcD5FieldOGvg",
+                "mangledName": "$s10MTAESDUKPT18SelectableCardDataV04cardD6FieldsShyAA0bcD5FieldOGvg",
+                "moduleName": "MTAESDUKPT",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "cardHolderName",
+            "printedName": "cardHolderName",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MTAESDUKPT18SelectableCardDataV14cardHolderNameSSSgvp",
+            "mangledName": "$s10MTAESDUKPT18SelectableCardDataV14cardHolderNameSSSgvp",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MTAESDUKPT18SelectableCardDataV14cardHolderNameSSSgvg",
+                "mangledName": "$s10MTAESDUKPT18SelectableCardDataV14cardHolderNameSSSgvg",
+                "moduleName": "MTAESDUKPT",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "primaryAccountNumber",
+            "printedName": "primaryAccountNumber",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MTAESDUKPT18SelectableCardDataV20primaryAccountNumberSSSgvp",
+            "mangledName": "$s10MTAESDUKPT18SelectableCardDataV20primaryAccountNumberSSSgvp",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MTAESDUKPT18SelectableCardDataV20primaryAccountNumberSSSgvg",
+                "mangledName": "$s10MTAESDUKPT18SelectableCardDataV20primaryAccountNumberSSSgvg",
+                "moduleName": "MTAESDUKPT",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "expirationDate",
+            "printedName": "expirationDate",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MTAESDUKPT18SelectableCardDataV14expirationDateSSSgvp",
+            "mangledName": "$s10MTAESDUKPT18SelectableCardDataV14expirationDateSSSgvp",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MTAESDUKPT18SelectableCardDataV14expirationDateSSSgvg",
+                "mangledName": "$s10MTAESDUKPT18SelectableCardDataV14expirationDateSSSgvg",
+                "moduleName": "MTAESDUKPT",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "serviceCode",
+            "printedName": "serviceCode",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MTAESDUKPT18SelectableCardDataV11serviceCodeSSSgvp",
+            "mangledName": "$s10MTAESDUKPT18SelectableCardDataV11serviceCodeSSSgvp",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MTAESDUKPT18SelectableCardDataV11serviceCodeSSSgvg",
+                "mangledName": "$s10MTAESDUKPT18SelectableCardDataV11serviceCodeSSSgvg",
+                "moduleName": "MTAESDUKPT",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "track1DiscretionaryData",
+            "printedName": "track1DiscretionaryData",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MTAESDUKPT18SelectableCardDataV019track1DiscretionaryD0SSSgvp",
+            "mangledName": "$s10MTAESDUKPT18SelectableCardDataV019track1DiscretionaryD0SSSgvp",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MTAESDUKPT18SelectableCardDataV019track1DiscretionaryD0SSSgvg",
+                "mangledName": "$s10MTAESDUKPT18SelectableCardDataV019track1DiscretionaryD0SSSgvg",
+                "moduleName": "MTAESDUKPT",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "track2DiscretionaryData",
+            "printedName": "track2DiscretionaryData",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MTAESDUKPT18SelectableCardDataV019track2DiscretionaryD0SSSgvp",
+            "mangledName": "$s10MTAESDUKPT18SelectableCardDataV019track2DiscretionaryD0SSSgvp",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MTAESDUKPT18SelectableCardDataV019track2DiscretionaryD0SSSgvg",
+                "mangledName": "$s10MTAESDUKPT18SelectableCardDataV019track2DiscretionaryD0SSSgvg",
+                "moduleName": "MTAESDUKPT",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Struct",
+        "usr": "s:10MTAESDUKPT18SelectableCardDataV",
+        "mangledName": "$s10MTAESDUKPT18SelectableCardDataV",
+        "moduleName": "MTAESDUKPT",
+        "declAttributes": [
+          "AccessControl",
+          "RawDocComment"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MTAESDUKPT",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "MTEncryptedData",
+        "printedName": "MTEncryptedData",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "SdkVersion",
+            "printedName": "SdkVersion",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MTAESDUKPT15MTEncryptedDataC10SdkVersionSSvpZ",
+            "mangledName": "$s10MTAESDUKPT15MTEncryptedDataC10SdkVersionSSvpZ",
+            "moduleName": "MTAESDUKPT",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "Final",
+              "HasStorage",
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MTAESDUKPT15MTEncryptedDataC10SdkVersionSSvgZ",
+                "mangledName": "$s10MTAESDUKPT15MTEncryptedDataC10SdkVersionSSvgZ",
+                "moduleName": "MTAESDUKPT",
+                "static": true,
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(selectableCardDataKey:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "MTEncryptedData",
+                "printedName": "MTAESDUKPT.MTEncryptedData",
+                "usr": "s:10MTAESDUKPT15MTEncryptedDataC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:10MTAESDUKPT15MTEncryptedDataC014selectableCardC3KeyACSS_tcfc",
+            "mangledName": "$s10MTAESDUKPT15MTEncryptedDataC014selectableCardC3KeyACSS_tcfc",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Function",
+            "name": "getSelectableCardData",
+            "printedName": "getSelectableCardData(arqc:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "SelectableCardData",
+                "printedName": "MTAESDUKPT.SelectableCardData",
+                "usr": "s:10MTAESDUKPT18SelectableCardDataV"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MTAESDUKPT15MTEncryptedDataC017getSelectableCardC04arqcAA0efC0VSS_tKF",
+            "mangledName": "$s10MTAESDUKPT15MTEncryptedDataC017getSelectableCardC04arqcAA0efC0VSS_tKF",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "getSelectableCardData",
+            "printedName": "getSelectableCardData(arqc:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "SelectableCardData",
+                "printedName": "MTAESDUKPT.SelectableCardData",
+                "usr": "s:10MTAESDUKPT18SelectableCardDataV"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Data",
+                "printedName": "Foundation.Data",
+                "usr": "s:10Foundation4DataV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MTAESDUKPT15MTEncryptedDataC017getSelectableCardC04arqcAA0efC0V10Foundation0C0V_tKF",
+            "mangledName": "$s10MTAESDUKPT15MTEncryptedDataC017getSelectableCardC04arqcAA0efC0V10Foundation0C0V_tKF",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "getSelectableCardData",
+            "printedName": "getSelectableCardData(scdeData:scdeKsn:scdeKeyInfo:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "SelectableCardData",
+                "printedName": "MTAESDUKPT.SelectableCardData",
+                "usr": "s:10MTAESDUKPT18SelectableCardDataV"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MTAESDUKPT15MTEncryptedDataC017getSelectableCardC004scdeC00G3Ksn0G7KeyInfoAA0efC0VSS_S2StKF",
+            "mangledName": "$s10MTAESDUKPT15MTEncryptedDataC017getSelectableCardC004scdeC00G3Ksn0G7KeyInfoAA0efC0VSS_S2StKF",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Class",
+        "usr": "s:10MTAESDUKPT15MTEncryptedDataC",
+        "mangledName": "$s10MTAESDUKPT15MTEncryptedDataC",
+        "moduleName": "MTAESDUKPT",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MTAESDUKPT",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "MTError",
+        "printedName": "MTError",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "StringError",
+            "printedName": "StringError",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MTAESDUKPT.MTError.Type) -> (Swift.String) -> MTAESDUKPT.MTError",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(Swift.String) -> MTAESDUKPT.MTError",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "MTError",
+                        "printedName": "MTAESDUKPT.MTError",
+                        "usr": "s:10MTAESDUKPT7MTErrorO"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MTAESDUKPT.MTError.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "MTError",
+                        "printedName": "MTAESDUKPT.MTError",
+                        "usr": "s:10MTAESDUKPT7MTErrorO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MTAESDUKPT7MTErrorO11StringErroryACSScACmF",
+            "mangledName": "$s10MTAESDUKPT7MTErrorO11StringErroryACSScACmF",
+            "moduleName": "MTAESDUKPT"
+          }
+        ],
+        "declKind": "Enum",
+        "usr": "s:10MTAESDUKPT7MTErrorO",
+        "mangledName": "$s10MTAESDUKPT7MTErrorO",
+        "moduleName": "MTAESDUKPT",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Error",
+            "printedName": "Error",
+            "usr": "s:s5ErrorP",
+            "mangledName": "$ss5ErrorP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "SendableMetatype",
+            "printedName": "SendableMetatype",
+            "usr": "s:s16SendableMetatypeP",
+            "mangledName": "$ss16SendableMetatypeP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MTAESDUKPT",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MTAESDUKPT",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "CommonCrypto",
+        "printedName": "CommonCrypto",
+        "declKind": "Import",
+        "moduleName": "MTAESDUKPT"
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "String",
+        "printedName": "String",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "byteArrayFromHexString",
+            "printedName": "byteArrayFromHexString",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Array",
+                "printedName": "[Swift.UInt8]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "UInt8",
+                    "printedName": "Swift.UInt8",
+                    "usr": "s:s5UInt8V"
+                  }
+                ],
+                "usr": "s:Sa"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:SS10MTAESDUKPTE22byteArrayFromHexStringSays5UInt8VGvp",
+            "mangledName": "$sSS10MTAESDUKPTE22byteArrayFromHexStringSays5UInt8VGvp",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[Swift.UInt8]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "UInt8",
+                        "printedName": "Swift.UInt8",
+                        "usr": "s:s5UInt8V"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:SS10MTAESDUKPTE22byteArrayFromHexStringSays5UInt8VGvg",
+                "mangledName": "$sSS10MTAESDUKPTE22byteArrayFromHexStringSays5UInt8VGvg",
+                "moduleName": "MTAESDUKPT",
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "dataFromHexString",
+            "printedName": "dataFromHexString",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Data",
+                "printedName": "Foundation.Data",
+                "usr": "s:10Foundation4DataV"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:SS10MTAESDUKPTE17dataFromHexString10Foundation4DataVvp",
+            "mangledName": "$sSS10MTAESDUKPTE17dataFromHexString10Foundation4DataVvp",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Data",
+                    "printedName": "Foundation.Data",
+                    "usr": "s:10Foundation4DataV"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:SS10MTAESDUKPTE17dataFromHexString10Foundation4DataVvg",
+                "mangledName": "$sSS10MTAESDUKPTE17dataFromHexString10Foundation4DataVvg",
+                "moduleName": "MTAESDUKPT",
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "stringFromHexString",
+            "printedName": "stringFromHexString",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:SS10MTAESDUKPTE19stringFromHexStringSSvp",
+            "mangledName": "$sSS10MTAESDUKPTE19stringFromHexStringSSvp",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:SS10MTAESDUKPTE19stringFromHexStringSSvg",
+                "mangledName": "$sSS10MTAESDUKPTE19stringFromHexStringSSvg",
+                "moduleName": "MTAESDUKPT",
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "errorDescription",
+            "printedName": "errorDescription",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:SS10MTAESDUKPTE16errorDescriptionSSSgvp",
+            "mangledName": "$sSS10MTAESDUKPTE16errorDescriptionSSSgvp",
+            "moduleName": "MTAESDUKPT",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:SS10MTAESDUKPTE16errorDescriptionSSSgvg",
+                "mangledName": "$sSS10MTAESDUKPTE16errorDescriptionSSSgvg",
+                "moduleName": "MTAESDUKPT",
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Struct",
+        "usr": "s:SS",
+        "mangledName": "$sSS",
+        "moduleName": "Swift",
+        "declAttributes": [
+          "EagerMove",
+          "Frozen"
+        ],
+        "isExternal": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Error",
+            "printedName": "Error",
+            "usr": "s:s5ErrorP",
+            "mangledName": "$ss5ErrorP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "LocalizedError",
+            "printedName": "LocalizedError",
+            "usr": "s:10Foundation14LocalizedErrorP",
+            "mangledName": "$s10Foundation14LocalizedErrorP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Decodable",
+            "printedName": "Decodable",
+            "usr": "s:Se",
+            "mangledName": "$sSe"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Encodable",
+            "printedName": "Encodable",
+            "usr": "s:SE",
+            "mangledName": "$sSE"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CodingKeyRepresentable",
+            "printedName": "CodingKeyRepresentable",
+            "usr": "s:s22CodingKeyRepresentableP",
+            "mangledName": "$ss22CodingKeyRepresentableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_HasContiguousBytes",
+            "printedName": "_HasContiguousBytes",
+            "usr": "s:s19_HasContiguousBytesP",
+            "mangledName": "$ss19_HasContiguousBytesP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomReflectable",
+            "printedName": "CustomReflectable",
+            "usr": "s:s17CustomReflectableP",
+            "mangledName": "$ss17CustomReflectableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_CustomPlaygroundQuickLookable",
+            "printedName": "_CustomPlaygroundQuickLookable",
+            "usr": "s:s30_CustomPlaygroundQuickLookableP",
+            "mangledName": "$ss30_CustomPlaygroundQuickLookableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "TextOutputStream",
+            "printedName": "TextOutputStream",
+            "usr": "s:s16TextOutputStreamP",
+            "mangledName": "$ss16TextOutputStreamP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "TextOutputStreamable",
+            "printedName": "TextOutputStreamable",
+            "usr": "s:s20TextOutputStreamableP",
+            "mangledName": "$ss20TextOutputStreamableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "SendableMetatype",
+            "printedName": "SendableMetatype",
+            "usr": "s:s16SendableMetatypeP",
+            "mangledName": "$ss16SendableMetatypeP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_ExpressibleByBuiltinUnicodeScalarLiteral",
+            "printedName": "_ExpressibleByBuiltinUnicodeScalarLiteral",
+            "usr": "s:s41_ExpressibleByBuiltinUnicodeScalarLiteralP",
+            "mangledName": "$ss41_ExpressibleByBuiltinUnicodeScalarLiteralP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_ExpressibleByBuiltinExtendedGraphemeClusterLiteral",
+            "printedName": "_ExpressibleByBuiltinExtendedGraphemeClusterLiteral",
+            "usr": "s:s51_ExpressibleByBuiltinExtendedGraphemeClusterLiteralP",
+            "mangledName": "$ss51_ExpressibleByBuiltinExtendedGraphemeClusterLiteralP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_ExpressibleByBuiltinStringLiteral",
+            "printedName": "_ExpressibleByBuiltinStringLiteral",
+            "usr": "s:s34_ExpressibleByBuiltinStringLiteralP",
+            "mangledName": "$ss34_ExpressibleByBuiltinStringLiteralP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "ExpressibleByStringLiteral",
+            "printedName": "ExpressibleByStringLiteral",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "StringLiteralType",
+                "printedName": "StringLiteralType",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:s26ExpressibleByStringLiteralP",
+            "mangledName": "$ss26ExpressibleByStringLiteralP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "ExpressibleByExtendedGraphemeClusterLiteral",
+            "printedName": "ExpressibleByExtendedGraphemeClusterLiteral",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "ExtendedGraphemeClusterLiteralType",
+                "printedName": "ExtendedGraphemeClusterLiteralType",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:s43ExpressibleByExtendedGraphemeClusterLiteralP",
+            "mangledName": "$ss43ExpressibleByExtendedGraphemeClusterLiteralP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "ExpressibleByUnicodeScalarLiteral",
+            "printedName": "ExpressibleByUnicodeScalarLiteral",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "UnicodeScalarLiteralType",
+                "printedName": "UnicodeScalarLiteralType",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:s33ExpressibleByUnicodeScalarLiteralP",
+            "mangledName": "$ss33ExpressibleByUnicodeScalarLiteralP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomDebugStringConvertible",
+            "printedName": "CustomDebugStringConvertible",
+            "usr": "s:s28CustomDebugStringConvertibleP",
+            "mangledName": "$ss28CustomDebugStringConvertibleP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomStringConvertible",
+            "printedName": "CustomStringConvertible",
+            "usr": "s:s23CustomStringConvertibleP",
+            "mangledName": "$ss23CustomStringConvertibleP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "BidirectionalCollection",
+            "printedName": "BidirectionalCollection",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "Element",
+                "printedName": "Element",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Character",
+                    "printedName": "Swift.Character",
+                    "usr": "s:SJ"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeWitness",
+                "name": "Index",
+                "printedName": "Index",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Index",
+                    "printedName": "Swift.String.Index",
+                    "usr": "s:SS5IndexV"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeWitness",
+                "name": "SubSequence",
+                "printedName": "SubSequence",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Substring",
+                    "printedName": "Swift.Substring",
+                    "usr": "s:Ss"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeWitness",
+                "name": "Indices",
+                "printedName": "Indices",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "DefaultIndices",
+                    "printedName": "Swift.DefaultIndices<Swift.String>",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:SI"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:SK",
+            "mangledName": "$sSK"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Collection",
+            "printedName": "Collection",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "Element",
+                "printedName": "Element",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Character",
+                    "printedName": "Swift.Character",
+                    "usr": "s:SJ"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeWitness",
+                "name": "Index",
+                "printedName": "Index",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Index",
+                    "printedName": "Swift.String.Index",
+                    "usr": "s:SS5IndexV"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeWitness",
+                "name": "Iterator",
+                "printedName": "Iterator",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Iterator",
+                    "printedName": "Swift.String.Iterator",
+                    "usr": "s:SS8IteratorV"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeWitness",
+                "name": "SubSequence",
+                "printedName": "SubSequence",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Substring",
+                    "printedName": "Swift.Substring",
+                    "usr": "s:Ss"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeWitness",
+                "name": "Indices",
+                "printedName": "Indices",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "DefaultIndices",
+                    "printedName": "Swift.DefaultIndices<Swift.String>",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:SI"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:Sl",
+            "mangledName": "$sSl"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sequence",
+            "printedName": "Sequence",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "Element",
+                "printedName": "Element",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Character",
+                    "printedName": "Swift.Character",
+                    "usr": "s:SJ"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeWitness",
+                "name": "Iterator",
+                "printedName": "Iterator",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Iterator",
+                    "printedName": "Swift.String.Iterator",
+                    "usr": "s:SS8IteratorV"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:ST",
+            "mangledName": "$sST"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Comparable",
+            "printedName": "Comparable",
+            "usr": "s:SL",
+            "mangledName": "$sSL"
+          },
+          {
+            "kind": "Conformance",
+            "name": "StringProtocol",
+            "printedName": "StringProtocol",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "UTF8View",
+                "printedName": "UTF8View",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "UTF8View",
+                    "printedName": "Swift.String.UTF8View",
+                    "usr": "s:SS8UTF8ViewV"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeWitness",
+                "name": "UTF16View",
+                "printedName": "UTF16View",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "UTF16View",
+                    "printedName": "Swift.String.UTF16View",
+                    "usr": "s:SS9UTF16ViewV"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeWitness",
+                "name": "UnicodeScalarView",
+                "printedName": "UnicodeScalarView",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "UnicodeScalarView",
+                    "printedName": "Swift.String.UnicodeScalarView",
+                    "usr": "s:SS17UnicodeScalarViewV"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeWitness",
+                "name": "SubSequence",
+                "printedName": "SubSequence",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Substring",
+                    "printedName": "Swift.Substring",
+                    "usr": "s:Ss"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:Sy",
+            "mangledName": "$sSy"
+          },
+          {
+            "kind": "Conformance",
+            "name": "ExpressibleByStringInterpolation",
+            "printedName": "ExpressibleByStringInterpolation",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "StringInterpolation",
+                "printedName": "StringInterpolation",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "DefaultStringInterpolation",
+                    "printedName": "Swift.DefaultStringInterpolation",
+                    "usr": "s:s26DefaultStringInterpolationV"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:s32ExpressibleByStringInterpolationP",
+            "mangledName": "$ss32ExpressibleByStringInterpolationP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "LosslessStringConvertible",
+            "printedName": "LosslessStringConvertible",
+            "usr": "s:s25LosslessStringConvertibleP",
+            "mangledName": "$ss25LosslessStringConvertibleP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "RangeReplaceableCollection",
+            "printedName": "RangeReplaceableCollection",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "SubSequence",
+                "printedName": "SubSequence",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Substring",
+                    "printedName": "Swift.Substring",
+                    "usr": "s:Ss"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:Sm",
+            "mangledName": "$sSm"
+          },
+          {
+            "kind": "Conformance",
+            "name": "MirrorPath",
+            "printedName": "MirrorPath",
+            "usr": "s:s10MirrorPathP",
+            "mangledName": "$ss10MirrorPathP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_ObjectiveCBridgeable",
+            "printedName": "_ObjectiveCBridgeable",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "_ObjectiveCType",
+                "printedName": "_ObjectiveCType",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "NSString",
+                    "printedName": "Foundation.NSString",
+                    "usr": "c:objc(cs)NSString"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:s21_ObjectiveCBridgeableP",
+            "mangledName": "$ss21_ObjectiveCBridgeableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CVarArg",
+            "printedName": "CVarArg",
+            "usr": "s:s7CVarArgP",
+            "mangledName": "$ss7CVarArgP"
+          }
+        ]
+      }
+    ],
+    "json_format_version": 8
+  },
+  "ConstValues": [
+    {
+      "filePath": "\/Users\/Yong\/MagTek\/MTAESDUKPT_iOS\/MTAESDUKPT\/MTAESDUKPT\/SelectableCardData.swift",
+      "kind": "StringLiteral",
+      "offset": 2124,
+      "length": 4,
+      "value": "\"2A\""
+    },
+    {
+      "filePath": "\/Users\/Yong\/MagTek\/MTAESDUKPT_iOS\/MTAESDUKPT\/MTAESDUKPT\/MTEncryptedData.swift",
+      "kind": "StringLiteral",
+      "offset": 283,
+      "length": 7,
+      "value": "\"1.0.3\""
+    },
+    {
+      "filePath": "\/Users\/Yong\/MagTek\/MTAESDUKPT_iOS\/MTAESDUKPT\/MTAESDUKPT\/HexUtil.swift",
+      "kind": "Array",
+      "offset": 1391,
+      "length": 2,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/Yong\/MagTek\/MTAESDUKPT_iOS\/MTAESDUKPT\/MTAESDUKPT\/HexUtil.swift",
+      "kind": "IntegerLiteral",
+      "offset": 4252,
+      "length": 1,
+      "value": "1"
+    },
+    {
+      "filePath": "\/Users\/Yong\/MagTek\/MTAESDUKPT_iOS\/MTAESDUKPT\/MTAESDUKPT\/HexUtil.swift",
+      "kind": "IntegerLiteral",
+      "offset": 4257,
+      "length": 1,
+      "value": "0"
+    },
+    {
+      "filePath": "\/Users\/Yong\/MagTek\/MTAESDUKPT_iOS\/MTAESDUKPT\/MTAESDUKPT\/HexUtil.swift",
+      "kind": "Array",
+      "offset": 4323,
+      "length": 2,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/Yong\/MagTek\/MTAESDUKPT_iOS\/MTAESDUKPT\/MTAESDUKPT\/HexUtil.swift",
+      "kind": "StringLiteral",
+      "offset": 13429,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/Yong\/MagTek\/MTAESDUKPT_iOS\/MTAESDUKPT\/MTAESDUKPT\/HexUtil.swift",
+      "kind": "IntegerLiteral",
+      "offset": 13449,
+      "length": 1,
+      "value": "0"
+    },
+    {
+      "filePath": "\/Users\/Yong\/MagTek\/MTAESDUKPT_iOS\/MTAESDUKPT\/MTAESDUKPT\/HexUtil.swift",
+      "kind": "StringLiteral",
+      "offset": 13467,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/Yong\/MagTek\/MTAESDUKPT_iOS\/MTAESDUKPT\/MTAESDUKPT\/MTAESDUKPT.swift",
+      "kind": "Array",
+      "offset": 874,
+      "length": 96,
+      "value": "[0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10, 0xF1, 0xF1, 0xF1, 0xF1, 0xF1, 0xF1, 0xF1, 0xF1]"
+    }
+  ]
+}

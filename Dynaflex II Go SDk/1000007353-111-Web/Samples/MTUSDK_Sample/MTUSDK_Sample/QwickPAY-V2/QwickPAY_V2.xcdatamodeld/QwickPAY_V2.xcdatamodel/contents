@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14135" systemVersion="17G65" minimumToolsVersion="Xcode 9.0" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="AuthenticationManagerDB" syncable="YES">
+        <attribute name="merchantID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="merchantPassword" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="TransactionHistory" syncable="YES">
+        <attribute name="address" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="authorizationCode" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="billingZip" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="cardType" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="city" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="customerName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="cvv" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="didVoidOrRefund" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="invoiceNumber" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="last4Digits" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="legacyData" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="location" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="merchantID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="mpCount" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="mpDays" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="mpRegBy" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="mpScore" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="notes" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="phoneNumber" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="poNumber" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="signature" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="state" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="statusMessage" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="totalAmount" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="transactionDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="transactionID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="transactionType" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="zip" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="AuthenticationManagerDB" positionX="-225" positionY="-0" width="117" height="75"/>
+        <element name="TransactionHistory" positionX="-81" positionY="-0" width="128" height="480"/>
+    </elements>
+</model>
