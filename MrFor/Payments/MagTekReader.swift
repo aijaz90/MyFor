@@ -78,6 +78,11 @@ final class MagTekReader: NSObject, ReaderEngineProtocol {
     private func startAutoReconnect() {
         guard let saved = savedReaderId, !connectionState.isConnected, !autoReconnecting else { return }
         autoReconnecting = true
+        // Reflect the attempt in the UI immediately — PaymentView's pill and
+        // BluetoothDevicesView's status row both read `connectionState`, so this
+        // is what turns "No reader connected" into "Scanning…" the moment a
+        // previously-paired reader might still be reachable.
+        if !connectionState.isConnected { connectionState = .scanning }
         MTLog("🔁 Auto-reconnect: scanning for \(saved)…")
         core.setDeviceType(MTU_DeviceType_MMS, andConnectionType: MTU_ConnectionType_BLUETOOTH_LE_EMV)
         core.startDiscover()
@@ -89,9 +94,16 @@ final class MagTekReader: NSObject, ReaderEngineProtocol {
                 guard let self, self.autoReconnecting else { return }
                 self.autoReconnecting = false
                 self.core.stopDiscover()
+                if case .scanning = self.connectionState { self.connectionState = .idle }
                 MTLog("🔁 Auto-reconnect: reader not found — stopped scanning")
             }
         }
+    }
+
+    /// Public entry point used by any screen (PaymentView, BluetoothDevicesView)
+    /// to (re)kick auto-reconnect. Safe to call repeatedly.
+    func reconnectIfNeeded() {
+        startAutoReconnect()
     }
 
     // MARK: Discovery

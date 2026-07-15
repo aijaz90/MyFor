@@ -105,7 +105,9 @@ extension DynaFlexPaymentRequest {
             currencyCode: "USD",
             sourceApp: Defaults.sourceApp,
             paymentPurpose: Defaults.paymentPurpose,
-            referenceId: Defaults.referenceId,
+            // Unique per transaction — the backend rejects repeats as
+            // "DUPLICATE TRANSACTION" if this is reused.
+            referenceId: UUID().uuidString.lowercased(),
             donationId: Defaults.donationId,
             campaignId: Defaults.campaignId,
             eventId: nil,
@@ -173,13 +175,26 @@ struct DynaFlexPaymentResponse: Decodable {
         }
     }
 
-    // The API returns camelCase on success but PascalCase on error responses;
-    // decode tolerantly so we always surface the server's message.
+    // The backend returns two shapes:
+    //   success → { "data": { success, message, data: {…} } }   (wrapped)
+    //   error   → { success, message }                            (flat)
+    // Handle both: use the flat top-level success if present, otherwise unwrap
+    // the outer "data" envelope.
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: AnyKey.self)
-        success = c.bool("success", "Success") ?? false
-        message = c.string("message", "Message")
-        data = c.decodeIfPresent(PaymentData.self, "data", "Data")
+        if let s = c.bool("success", "Success") {
+            success = s
+            message = c.string("message", "Message")
+            data = c.decodeIfPresent(PaymentData.self, "data", "Data")
+        } else if let outer = try? c.nestedContainer(keyedBy: AnyKey.self, forKey: AnyKey("data")) {
+            success = outer.bool("success", "Success") ?? false
+            message = outer.string("message", "Message")
+            data = outer.decodeIfPresent(PaymentData.self, "data", "Data")
+        } else {
+            success = false
+            message = c.string("message", "Message")
+            data = nil
+        }
     }
 }
 

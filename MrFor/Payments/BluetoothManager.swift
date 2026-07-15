@@ -28,6 +28,13 @@ final class BluetoothManager: NSObject, ReaderEngineProtocol {
     @ObservationIgnored private var central: CBCentralManager?
     @ObservationIgnored private var peripherals: [String: CBPeripheral] = [:]
     @ObservationIgnored private var connected: CBPeripheral?
+    @ObservationIgnored private var autoReconnecting = false
+    @ObservationIgnored private var autoReconnectTimeout: Task<Void, Never>?
+    private static let savedReaderKey = "mrfor.saved_reader_id"
+    private var savedReaderId: String? {
+        get { UserDefaults.standard.string(forKey: Self.savedReaderKey) }
+        set { UserDefaults.standard.setValue(newValue, forKey: Self.savedReaderKey) }
+    }
 
     override init() {
         super.init()
@@ -49,6 +56,27 @@ final class BluetoothManager: NSObject, ReaderEngineProtocol {
         if case .scanning = connectionState { connectionState = .idle }
     }
 
+    /// Silently retry connecting to the last-paired reader by name. CoreBluetooth
+    /// can't reconnect by identifier across launches reliably without retrieving
+    /// known peripherals, so we scan and match by saved name, same UX as MagTek's
+    /// auto-reconnect (pill shows "Scanning…" instead of a bare "No reader").
+    func reconnectIfNeeded() {
+        guard let saved = savedReaderId, !connectionState.isConnected, !autoReconnecting, isReady else { return }
+        autoReconnecting = true
+        connectionState = .scanning
+        start()
+        autoReconnectTimeout?.cancel()
+        autoReconnectTimeout = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 15_000_000_000)
+            await MainActor.run {
+                guard let self, self.autoReconnecting else { return }
+                self.autoReconnecting = false
+                if case .scanning = self.connectionState { self.stop() }
+            }
+        }
+        MTLog("🔁 Auto-reconnect (fallback): scanning for \(saved)…")
+    }
+
     func connect(_ device: ReaderDevice) {
         guard let peripheral = peripherals[device.id], let central else { return }
         stop()
@@ -56,9 +84,13 @@ final class BluetoothManager: NSObject, ReaderEngineProtocol {
         connected = peripheral
         peripheral.delegate = self
         central.connect(peripheral, options: nil)
+        savedReaderId = device.id
     }
 
     func disconnect() {
+        savedReaderId = nil
+        autoReconnecting = false
+        autoReconnectTimeout?.cancel()
         if let p = connected { central?.cancelPeripheralConnection(p) }
     }
 
@@ -80,6 +112,8 @@ extension BluetoothManager: CBCentralManagerDelegate {
                 self.connectionState = unauthorized
                     ? .failed("Bluetooth permission denied. Enable it in Settings.")
                     : .idle
+            } else {
+                self.reconnectIfNeeded()
             }
         }
     }
@@ -105,6 +139,13 @@ extension BluetoothManager: CBCentralManagerDelegate {
             }
             self.devices.sort {
                 $0.isLikelyReader != $1.isLikelyReader ? $0.isLikelyReader : ($0.rssi ?? -999) > ($1.rssi ?? -999)
+            }
+            // Auto-reconnect: if the previously-paired reader just showed up
+            // while we're scanning for it, connect immediately.
+            if self.autoReconnecting, self.savedReaderId == id {
+                self.autoReconnecting = false
+                self.autoReconnectTimeout?.cancel()
+                self.connect(ReaderDevice(id: id, name: name, rssi: rssi))
             }
         }
     }

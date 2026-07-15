@@ -20,6 +20,7 @@ struct PaymentView: View {
     @State private var showingManualCard = false
 
     @FocusState private var amountFocused: Bool
+    @Environment(\.scenePhase) private var scenePhase
 
     private let orderNumber = "evt-1001"
 
@@ -100,7 +101,19 @@ struct PaymentView: View {
                     vm.receiptTransactionID = nil
                 }
             }
-            .onAppear { AppLogger.shared.screen("PaymentView") }
+            .onAppear {
+                AppLogger.shared.screen("PaymentView")
+                // Reflect a previously-paired reader's status immediately, without
+                // requiring the user to open the Bluetooth sheet first.
+                reader.reconnectIfNeeded()
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                // Coming back from background (e.g. after enabling Bluetooth in
+                // Settings, or the reader dropping/re-pairing) — retry silently.
+                if newPhase == .active {
+                    reader.reconnectIfNeeded()
+                }
+            }
         }
     }
 

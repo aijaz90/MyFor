@@ -169,6 +169,12 @@ protocol ReaderEngineProtocol: AnyObject {
     func connect(_ device: ReaderDevice)
     func disconnect()
 
+    /// Silently try to reconnect to the last-paired reader (no-op if already
+    /// connected/connecting, or if nothing was ever paired). Safe to call from
+    /// any screen (PaymentView on appear/foreground, BluetoothDevicesView on
+    /// appear) — cheap and idempotent.
+    func reconnectIfNeeded()
+
     /// Drive the reader to produce one encrypted card read. The caller (the
     /// view model) sends the result to the payment API.
     func readCard(amount: Decimal) async -> ReaderReadResult
