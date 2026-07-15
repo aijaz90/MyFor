@@ -11,7 +11,10 @@
 import SwiftUI
 
 struct PaymentView: View {
-    @State private var reader = ReaderEngine()
+    // Injected from MrForApp (one instance for the whole app lifetime) — never
+    // construct a ReaderEngine directly in a View. See the comment on
+    // MrForApp.reader for why that caused reconnect storms / dropped readers.
+    let reader: ReaderEngine
     @State private var vm = FortePaymentProcessViewModel()
 
     @State private var amount: Decimal = 1.00
@@ -272,5 +275,5 @@ extension String: @retroactive Identifiable {
 }
 
 #Preview {
-    PaymentView()
+    PaymentView(reader: ReaderEngine())
 }

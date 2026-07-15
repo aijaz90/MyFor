@@ -8,11 +8,13 @@
 import SwiftUI
 
 struct ContentView: View {
+    let reader: ReaderEngine
+
     var body: some View {
-        PaymentView()
+        PaymentView(reader: reader)
     }
 }
 
 #Preview {
-    ContentView()
+    ContentView(reader: ReaderEngine())
 }
